@@ -5,6 +5,10 @@ IR remote control for DeLonghi PAC N90 Eco on Raspi.
 sudo apt-get install libpigpio
 Install: paho.mqtt.c
 
+# Configuration
+- Adjust hostname & co for mqtt
+- Adjust topics for mqtt
+
 # Reverse engineering
 cat off_synth |grep "^1"|awk 'NR>1{if($2<700){a=a"0"}if($2>700){a=a"1"}}END{print a}'
 
