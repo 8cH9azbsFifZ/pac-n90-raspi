@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
+#include <stdlib.h>
 
 typedef struct {
   bool on;
@@ -115,9 +117,10 @@ unsigned char bit_reverse( unsigned char x )
 }
 
 
-//assumes little endian
+// Refs: 
 // https://stackoverflow.com/questions/111928/is-there-a-printf-converter-to-print-in-binary-format
-void printBits(size_t const size, void const * const ptr)
+// https://stackoverflow.com/questions/41384262/convert-string-to-binary-in-c
+void printBits(size_t const size, void const * const ptr, char *result)
 {
     unsigned char *b = (unsigned char*) ptr;
     unsigned char byte;
@@ -134,6 +137,24 @@ void printBits(size_t const size, void const * const ptr)
     puts("");
 }
 
+char* returnBits(size_t const size, void const * const ptr)
+{
+    unsigned char *b = (unsigned char*) ptr;
+    unsigned char byte;
+    int i, j;
+    char *binary = malloc(size*8+1); // each char is one byte (8 bits) and + 1 at the end for null terminator
+    binary[0] = '\0';
+
+    for (i=size-1;i>=0;i--)
+    {
+        for (j=7;j>=0;j--)
+        {
+            byte = (b[i] >> j) & 1;
+            if (byte) { strcat (binary,"1");}else{strcat(binary,"0");}
+        }
+    }
+    return binary;
+}
 
 int main (void)
 {
@@ -149,5 +170,6 @@ int main (void)
   msg.fan=2;
 
   unsigned long data = dl_assemble_msg(&msg);
-  printBits(sizeof(data), &data);
+  char *result = returnBits(sizeof(data), &data);
+  printf ("%s",result);
 }
