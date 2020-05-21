@@ -191,7 +191,36 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
 }
 
 
+int send_ir (char *msg)
+{
 
+        uint32_t outPin = 24;            // The Broadcom pin number the signal will be sent on
+        int frequency = 38000;           // The frequency of the IR signal in Hz
+        double dutyCycle = 0.5;          // The duty cycle of the IR signal. 0.5 means for every cycle,
+                                         // the LED will turn on for half the cycle time, and off the other half
+        int leadingPulseDuration = 9000; //9102; // The duration of the beginning pulse in microseconds
+        int leadingGapDuration = 4500;//4450;   // The duration of the gap in microseconds after the leading pulse
+        int onePulse = 560;              // The duration of a pulse in microseconds when sending a logical 1
+        int zeroPulse = 560;             // The duration of a pulse in microseconds when sending a logical 0
+        int oneGap = 1687; //1600;               // The duration of the gap in microseconds when sending a logical 1
+        int zeroGap = 560;               // The duration of the gap in microseconds when sending a logical 0
+        int sendTrailingPulse = 1;       // 1 = Send a trailing pulse with duration equal to "onePulse"
+                                         // 0 = Don't send a trailing pulse
+
+        int result = irSling(
+                outPin,
+                frequency,
+                dutyCycle,
+                leadingPulseDuration,
+                leadingGapDuration,
+                onePulse,
+                zeroPulse,
+                oneGap,
+                zeroGap,
+                sendTrailingPulse,
+                msg);
+   return result;
+}
 
 
 int main (void)
@@ -214,24 +243,6 @@ int main (void)
     //listen for operation
     MQTTClient_subscribe(client, "pac/on", 0);
 
-
-
-
-
-          uint32_t outPin = 24;            // The Broadcom pin number the signal will be sent on
-        int frequency = 38000;           // The frequency of the IR signal in Hz
-        double dutyCycle = 0.5;          // The duty cycle of the IR signal. 0.5 means for every cycle,
-                                         // the LED will turn on for half the cycle time, and off the other half
-        int leadingPulseDuration = 9000; //9102; // The duration of the beginning pulse in microseconds
-        int leadingGapDuration = 4500;//4450;   // The duration of the gap in microseconds after the leading pulse
-        int onePulse = 560;              // The duration of a pulse in microseconds when sending a logical 1
-        int zeroPulse = 560;             // The duration of a pulse in microseconds when sending a logical 0
-        int oneGap = 1687; //1600;               // The duration of the gap in microseconds when sending a logical 1
-        int zeroGap = 560;               // The duration of the gap in microseconds when sending a logical 0
-        int sendTrailingPulse = 1;       // 1 = Send a trailing pulse with duration equal to "onePulse"
-                                         // 0 = Don't send a trailing pulse
-
-
  
   dl_aircon_msg_t msg;
 
@@ -247,25 +258,13 @@ int main (void)
   unsigned long data = dl_assemble_msg(&msg);
   char *result = returnBits(sizeof(data), &data);
 
-  for (;;) {
+/*  for (;;) {
         //send temperature measurement
         publish(client, "s/us", result); 
         sleep(3);
   }
-
-
-        int result1 = irSling(
-                outPin,
-                frequency,
-                dutyCycle,
-                leadingPulseDuration,
-                leadingGapDuration,
-                onePulse,
-                zeroPulse,
-                oneGap,
-                zeroGap,
-                sendTrailingPulse,
-                result);
+*/
+  send_ir(&result);
 
 
 
