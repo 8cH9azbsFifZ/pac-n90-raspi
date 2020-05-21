@@ -64,15 +64,27 @@ unsigned char bit_reverse( unsigned char x );
 #define MAX(X, Y)  ((X) > (Y) ? (X) : (Y))
 #define constrain(X,Y,Z) (MIN(MAX(X,Y),Z))
 
+#define TEMPERATURE_MIN 16
+#define TEMPERATURE_MAX 32
+#define TEMPERATURE_F_MIN 61
+#define TEMPERATURE_F_MAX 89
+
+#define MODE_AIRCONDITIONING 8
+#define MODE_DEHUMIDIFY 2
+#define MODE_BLOW 1
+
+#define FAN_LOW 4
+#define FAN_MID 2 
+#define FAN_HIGH 1
 
 unsigned long dl_assemble_msg(dl_aircon_msg_t* msg){
   unsigned long buf = 0x12000000;
 
   if (!msg->unitF){
-    msg->temperature = constrain(msg->temperature, 16, 32);
+    msg->temperature = constrain(msg->temperature, 16, 32); // FIXME
     buf |= bit_reverse(msg->temperature-16);
   }else{
-    msg->temperature = constrain(msg->temperature, 61, 89);
+    msg->temperature = constrain(msg->temperature, 61, 89); // FIXME
     buf |= bit_reverse(msg->temperature);
   }
 
@@ -222,9 +234,26 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
     char* payload = message->payload;
     printf("Received operation %s\n", payload);
   
-  unsigned long data = dl_assemble_msg(&msg);
-  char *result = returnBits(sizeof(data), &data);
+    unsigned long data;
+  char *result;
+ 
+    if (strcmp(topicName,"pac/toggle/power")==0)
+{
+printf("power");
+if(strcmp(payload,"on")==0) 
+{
+msg.on=true;
+}
+if(strcmp(payload,"off")==0) 
+{
+msg.on=false;
+}
+}
+
+data = dl_assemble_msg(&msg);
+result = returnBits(sizeof(data), &data);
   send_ir(result);
+ 
 
     MQTTClient_freeMessage(&message);
     MQTTClient_free(topicName);
@@ -252,7 +281,7 @@ int main (void)
     //create device
     publish(client, "pac/name", "DeLonghi PAC N90 Eco"); 
     //listen for operation
-    MQTTClient_subscribe(client, "pac/on", 0);
+    MQTTClient_subscribe(client, "pac/toggle/power", 0);
 
  
 
@@ -271,8 +300,8 @@ int main (void)
   char unitF[8];
   char timer[8];
   char timer_value[8];
-  char mode[8];
-  char fan[8];
+  char mode[20];
+  char fan[10];
 
   for (;;) {
         //send temperature measurement
@@ -281,19 +310,31 @@ int main (void)
         if (msg.unitF == true) { sprintf(unitF, "°F"); } else { sprintf(unitF, "°C"); }
         if (msg.timer == true) { sprintf(timer, "on"); } else { sprintf(timer, "off"); }
         sprintf(timer_value, "%d", msg.timer_value);
-        sprintf(mode, "%d", msg.mode);
-        sprintf(fan, "%d", msg.fan);
+        if (msg.mode == MODE_AIRCONDITIONING) 
+{sprintf(mode, "Airconditioning"); }
+else if (msg.mode == MODE_DEHUMIDIFY)
+{sprintf(mode, "Dehumidify"); }
+else if (msg.mode == MODE_BLOW) 
+{sprintf(mode, "Blow"); }
+
+        if (msg.fan == FAN_LOW) 
+{sprintf(fan, "Low"); }
+else if (msg.fan == FAN_MID)
+{sprintf(fan, "Mid"); }
+else if (msg.fan == FAN_HIGH) 
+{sprintf(fan, "high"); }
+
         publish(client, "pac/power", power); 
         publish(client, "pac/temperature", temperature); 
         publish(client, "pac/unitF", unitF); 
         publish(client, "pac/timer", timer); 
         publish(client, "pac/timer_value", timer_value); 
+
         publish(client, "pac/mode", mode); 
         publish(client, "pac/fan", fan); 
+
         sleep(3);
   }
-
-
 
 
     MQTTClient_disconnect(client, 1000);
