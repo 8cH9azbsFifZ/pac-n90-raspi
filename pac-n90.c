@@ -2,8 +2,13 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include "MQTTClient.h"
 
 #include "ir-slinger/irslinger.h" // FIXME: dir
+
+#define ADDRESS     "t20:1883"
+#define CLIENTID    "<<clientId>>" // FIXME
 
 typedef struct {
   bool on;
@@ -162,8 +167,59 @@ char* returnBits(size_t const size, void const * const ptr)
     return binary;
 }
 
+
+
+
+void publish(MQTTClient client, char* topic, char* payload) {
+    MQTTClient_message pubmsg = MQTTClient_message_initializer;
+    pubmsg.payload = payload;
+    pubmsg.payloadlen = strlen(pubmsg.payload);
+    pubmsg.qos = 2;
+    pubmsg.retained = 0;
+    MQTTClient_deliveryToken token;
+    MQTTClient_publishMessage(client, topic, &pubmsg, &token);
+    MQTTClient_waitForCompletion(client, token, 1000L);
+    printf("Message '%s' with delivery token %d delivered\n", payload, token);
+}
+
+int on_message(void *context, char *topicName, int topicLen, MQTTClient_message *message) {
+    char* payload = message->payload;
+    printf("Received operation %s\n", payload);
+    MQTTClient_freeMessage(&message);
+    MQTTClient_free(topicName);
+    return 1;
+}
+
+
+
+
+
 int main (void)
 {
+    MQTTClient client;
+    MQTTClient_create(&client, ADDRESS, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+    MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
+    conn_opts.username = "<<tenant_ID>>/<<username>>";
+    conn_opts.password = "<<password>>";
+
+    MQTTClient_setCallbacks(client, NULL, NULL, on_message, NULL);
+
+    int rc;
+    if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS) {
+        printf("Failed to connect, return code %d\n", rc);
+        exit(-1);
+    }
+    //create device
+    publish(client, "s/us", "100,C MQTT,c8y_MQTTDevice");
+    //set hardware information
+    publish(client, "s/us", "110,S123456789,MQTT test model,Rev0.1");
+    //listen for operation
+    MQTTClient_subscribe(client, "s/ds", 0);
+
+
+
+
+
           uint32_t outPin = 24;            // The Broadcom pin number the signal will be sent on
         int frequency = 38000;           // The frequency of the IR signal in Hz
         double dutyCycle = 0.5;          // The duty cycle of the IR signal. 0.5 means for every cycle,
@@ -182,7 +238,7 @@ int main (void)
   dl_aircon_msg_t msg;
 
   //Default settings
-  msg.on = true; //false;
+  msg.on = false;
   msg.temperature = 24;
   msg.unitF = false;
   msg.timer = false;
@@ -193,6 +249,13 @@ int main (void)
   unsigned long data = dl_assemble_msg(&msg);
   char *result = returnBits(sizeof(data), &data);
   printf ("%s",result);
+
+      for (;;) {
+        //send temperature measurement
+        publish(client, "s/us", "211,25");
+        sleep(3);
+    }
+
 
         int result1 = irSling(
                 outPin,
@@ -206,5 +269,11 @@ int main (void)
                 zeroGap,
                 sendTrailingPulse,
                 result);
+
+
+
+    MQTTClient_disconnect(client, 1000);
+    MQTTClient_destroy(&client);
+    return rc;
 
 }
