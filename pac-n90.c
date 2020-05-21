@@ -270,8 +270,8 @@ int main (void)
         //send temperature measurement
         if (msg.on == true) { sprintf(power, "on"); } else { sprintf(power, "off"); }
         sprintf(temperature, "%d", msg.temperature);
-        sprintf(unitF, "%d", msg.unitF);
-        sprintf(timer, "%d", msg.timer);
+        if (msg.unitF == true) { sprintf(unitF, "°F"); } else { sprintf(unitF, "°C"); }
+        if (msg.timer == true) { sprintf(timer, "on"); } else { sprintf(timer, "off"); }
         sprintf(timer_value, "%d", msg.timer_value);
         sprintf(mode, "%d", msg.mode);
         sprintf(fan, "%d", msg.fan);
