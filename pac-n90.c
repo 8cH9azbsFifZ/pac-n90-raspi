@@ -239,7 +239,6 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
  
     if (strcmp(topicName,"pac/toggle/power")==0)
 {
-printf("power");
 if(strcmp(payload,"on")==0) 
 {
 msg.on=true;
@@ -248,6 +247,45 @@ if(strcmp(payload,"off")==0)
 {
 msg.on=false;
 }
+}
+
+    if (strcmp(topicName,"pac/toggle/mode")==0)
+{
+        if (atoi(payload) == MODE_AIRCONDITIONING)
+{
+msg.mode=MODE_AIRCONDITIONING;
+}
+if (strcmp(payload,"airconditioning")==0)
+{
+msg.mode=MODE_AIRCONDITIONING;
+}
+        if (atoi(payload) == MODE_DEHUMIDIFY)
+{msg.mode=MODE_DEHUMIDIFY;}
+if (strcmp(payload,"dehumidify")==0)
+{msg.mode=MODE_DEHUMIDIFY;}
+
+        if (atoi(payload) == MODE_BLOW)
+{msg.mode=MODE_BLOW;}
+
+if (strcmp(payload,"blow")==0)
+{msg.mode=MODE_BLOW;}
+
+}
+
+    if (strcmp(topicName,"pac/toggle/fan")==0)
+{
+if (atoi(payload) == FAN_LOW)
+{ msg.fan=FAN_LOW; }
+if (atoi(payload) == FAN_MID)
+{ msg.fan=FAN_MID; }
+if (atoi(payload) == FAN_HIGH)
+{ msg.fan=FAN_HIGH; }
+if (strcmp(payload,"high") == 0)
+{ msg.fan=FAN_HIGH; }
+if (strcmp(payload,"mid") == 0)
+{ msg.fan=FAN_MID; }
+if (strcmp(payload,"low") == 0)
+{ msg.fan=FAN_LOW; }
 }
 
 data = dl_assemble_msg(&msg);
@@ -282,17 +320,20 @@ int main (void)
     publish(client, "pac/name", "DeLonghi PAC N90 Eco"); 
     //listen for operation
     MQTTClient_subscribe(client, "pac/toggle/power", 0);
+    MQTTClient_subscribe(client, "pac/toggle/mode", 0);
+    MQTTClient_subscribe(client, "pac/toggle/fan", 0);
+    MQTTClient_subscribe(client, "pac/toggle/temperature", 0);
 
  
 
   //Default settings
-  msg.on = true; //false;
+  msg.on = false;
   msg.temperature = 24;
   msg.unitF = false;
   msg.timer = false;
   msg.timer_value = 1;
-  msg.mode=8;
-  msg.fan=2;
+  msg.mode=MODE_AIRCONDITIONING;
+  msg.fan=FAN_MID;
 
 
   char power[8];
