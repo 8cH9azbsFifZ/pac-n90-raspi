@@ -150,7 +150,11 @@ char* returnBits(size_t const size, void const * const ptr)
         for (j=7;j>=0;j--)
         {
             byte = (b[i] >> j) & 1;
-            if (byte) { strcat (binary,"1");}else{strcat(binary,"0");}
+            if (byte) { 
+		strcat (binary,"1");
+	    }else{
+		strcat(binary,"0");
+	    }
         }
     }
     return binary;
