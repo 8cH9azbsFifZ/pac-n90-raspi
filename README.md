@@ -14,6 +14,8 @@ cat off_synth |grep "^1"|awk 'NR>1{if($2<700){a=a"0"}if($2>700){a=a"1"}}END{prin
 
 mosquitto_pub -h t20 -t pac/toggle/power -m off
  mosquitto_sub -h t20 -t pac/power
+mosquitto_pub -h t20 -t pac/toggle/temperature -m 30
+
 
 
 
