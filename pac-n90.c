@@ -191,7 +191,7 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
 }
 
 
-int send_ir (char *msg)
+int send_ir (char* msg)
 {
 
         uint32_t outPin = 24;            // The Broadcom pin number the signal will be sent on
@@ -247,7 +247,7 @@ int main (void)
   dl_aircon_msg_t msg;
 
   //Default settings
-  msg.on = false;
+  msg.on = true; //false;
   msg.temperature = 24;
   msg.unitF = false;
   msg.timer = false;
@@ -264,7 +264,7 @@ int main (void)
         sleep(3);
   }
 */
-  send_ir(&result);
+  send_ir(result);
 
 
 
