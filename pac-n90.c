@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include "MQTTClient.h"
 
-#include "ir-slinger/irslinger.h" // FIXME: dir
+#include "ir-slinger/irslinger.h" 
 
 #define ADDRESS     "t20:1883"
 #define CLIENTID    "<<clientId>>" // FIXME
@@ -82,9 +82,9 @@ unsigned long dl_assemble_msg(dl_aircon_msg_t* msg){
 
   if (!msg->unitF){
     msg->temperature = constrain(msg->temperature, TEMPERATURE_MIN, TEMPERATURE_MAX); 
-    buf |= bit_reverse(msg->temperature-16);
+    buf |= bit_reverse(msg->temperature-TEMPERATURE_MIN);
   }else{
-    msg->temperature = constrain(msg->temperature, 61, 89); // FIXME
+    msg->temperature = constrain(msg->temperature, TEMPERATURE_F_MIN, TEMPERATURE_F_MAX); 
     buf |= bit_reverse(msg->temperature);
   }
 
