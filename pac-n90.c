@@ -20,6 +20,9 @@ typedef struct {
   int fan;
 } dl_aircon_msg_t;
 
+
+dl_aircon_msg_t msg;
+
 unsigned long dl_assemble_msg(dl_aircon_msg_t* msg);
 bool dl_decode_msg(dl_aircon_msg_t* msg);
 void dl_print_msg(dl_aircon_msg_t *msg);
@@ -182,14 +185,6 @@ void publish(MQTTClient client, char* topic, char* payload) {
     printf("Message '%s' with delivery token %d delivered\n", payload, token);
 }
 
-int on_message(void *context, char *topicName, int topicLen, MQTTClient_message *message) {
-    char* payload = message->payload;
-    printf("Received operation %s\n", payload);
-    MQTTClient_freeMessage(&message);
-    MQTTClient_free(topicName);
-    return 1;
-}
-
 
 int send_ir (char* msg)
 {
@@ -223,6 +218,22 @@ int send_ir (char* msg)
 }
 
 
+int on_message(void *context, char *topicName, int topicLen, MQTTClient_message *message) {
+    char* payload = message->payload;
+    printf("Received operation %s\n", payload);
+  
+  unsigned long data = dl_assemble_msg(&msg);
+  char *result = returnBits(sizeof(data), &data);
+  send_ir(result);
+
+    MQTTClient_freeMessage(&message);
+    MQTTClient_free(topicName);
+
+    return 1;
+}
+
+
+
 int main (void)
 {
     MQTTClient client;
@@ -244,7 +255,6 @@ int main (void)
     MQTTClient_subscribe(client, "pac/on", 0);
 
  
-  dl_aircon_msg_t msg;
 
   //Default settings
   msg.on = true; //false;
@@ -255,8 +265,6 @@ int main (void)
   msg.mode=8;
   msg.fan=2;
 
-  unsigned long data = dl_assemble_msg(&msg);
-  char *result = returnBits(sizeof(data), &data);
 
   char power[8];
   char temperature[8];
@@ -285,7 +293,6 @@ int main (void)
         sleep(3);
   }
 
-  send_ir(result);
 
 
 
