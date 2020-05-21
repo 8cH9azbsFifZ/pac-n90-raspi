@@ -268,7 +268,7 @@ int main (void)
 
   for (;;) {
         //send temperature measurement
-        sprintf(power, "%d", msg.on);
+        if (msg.on == true) { sprintf(power, "on"); } else { sprintf(power, "off"); }
         sprintf(temperature, "%d", msg.temperature);
         sprintf(unitF, "%d", msg.unitF);
         sprintf(timer, "%d", msg.timer);
