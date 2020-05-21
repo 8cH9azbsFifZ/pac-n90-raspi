@@ -81,7 +81,7 @@ unsigned long dl_assemble_msg(dl_aircon_msg_t* msg){
   unsigned long buf = 0x12000000;
 
   if (!msg->unitF){
-    msg->temperature = constrain(msg->temperature, 16, 32); // FIXME
+    msg->temperature = constrain(msg->temperature, TEMPERATURE_MIN, TEMPERATURE_MAX); 
     buf |= bit_reverse(msg->temperature-16);
   }else{
     msg->temperature = constrain(msg->temperature, 61, 89); // FIXME
@@ -286,6 +286,11 @@ if (strcmp(payload,"mid") == 0)
 { msg.fan=FAN_MID; }
 if (strcmp(payload,"low") == 0)
 { msg.fan=FAN_LOW; }
+}
+
+    if (strcmp(topicName,"pac/toggle/temperature")==0)
+{
+    msg.temperature = constrain(atoi(payload), TEMPERATURE_MIN, TEMPERATURE_MAX); 
 }
 
 data = dl_assemble_msg(&msg);
