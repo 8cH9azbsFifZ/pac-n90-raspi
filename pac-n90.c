@@ -258,12 +258,15 @@ int main (void)
   unsigned long data = dl_assemble_msg(&msg);
   char *result = returnBits(sizeof(data), &data);
 
-/*  for (;;) {
+  char temperature[8];
+
+  for (;;) {
         //send temperature measurement
-        publish(client, "s/us", result); 
+        sprintf(temperature, "%d", msg.temperature);
+        publish(client, "pac/temp", temperature); 
         sleep(3);
   }
-*/
+
   send_ir(result);
 
 
