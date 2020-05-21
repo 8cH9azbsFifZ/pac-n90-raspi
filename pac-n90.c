@@ -258,12 +258,30 @@ int main (void)
   unsigned long data = dl_assemble_msg(&msg);
   char *result = returnBits(sizeof(data), &data);
 
+  char power[8];
   char temperature[8];
+  char unitF[8];
+  char timer[8];
+  char timer_value[8];
+  char mode[8];
+  char fan[8];
 
   for (;;) {
         //send temperature measurement
+        sprintf(power, "%d", msg.on);
         sprintf(temperature, "%d", msg.temperature);
-        publish(client, "pac/temp", temperature); 
+        sprintf(unitF, "%d", msg.unitF);
+        sprintf(timer, "%d", msg.timer);
+        sprintf(timer_value, "%d", msg.timer_value);
+        sprintf(mode, "%d", msg.mode);
+        sprintf(fan, "%d", msg.fan);
+        publish(client, "pac/power", power); 
+        publish(client, "pac/temperature", temperature); 
+        publish(client, "pac/unitF", unitF); 
+        publish(client, "pac/timer", timer); 
+        publish(client, "pac/timer_value", timer_value); 
+        publish(client, "pac/mode", mode); 
+        publish(client, "pac/fan", fan); 
         sleep(3);
   }
 
