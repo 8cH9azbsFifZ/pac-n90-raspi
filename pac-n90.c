@@ -5,10 +5,6 @@
 
 #include "ir-slinger/irslinger.h" // FIXME: dir
 
-
-#define on      "00010010000100010001010100110010" // FIXME: remove
-#define off     "00010010000100011000010000110010"
-
 typedef struct {
   bool on;
   bool timer;
@@ -186,7 +182,7 @@ int main (void)
   dl_aircon_msg_t msg;
 
   //Default settings
-  msg.on = false;
+  msg.on = true; //false;
   msg.temperature = 24;
   msg.unitF = false;
   msg.timer = false;
@@ -210,8 +206,5 @@ int main (void)
                 zeroGap,
                 sendTrailingPulse,
                 result);
-//              "00010010000100011000010000110010");
-//                "00010010001010001000000100010000");
-                //"01000001101101100101100010100111");
 
 }
