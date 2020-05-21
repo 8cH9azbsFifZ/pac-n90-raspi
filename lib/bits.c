@@ -148,6 +148,6 @@ int main (void)
   msg.mode=8;
   msg.fan=2;
 
-unsigned long data = dl_assemble_msg(&msg);
+  unsigned long data = dl_assemble_msg(&msg);
   printBits(sizeof(data), &data);
 }
