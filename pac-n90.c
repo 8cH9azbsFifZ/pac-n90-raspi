@@ -199,7 +199,7 @@ int main (void)
     MQTTClient client;
     MQTTClient_create(&client, ADDRESS, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
     MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
-    conn_opts.username = "<<tenant_ID>>/<<username>>";
+    conn_opts.username = "<<tenant_ID>>/<<username>>"; // FIXME
     conn_opts.password = "<<password>>";
 
     MQTTClient_setCallbacks(client, NULL, NULL, on_message, NULL);
@@ -210,11 +210,9 @@ int main (void)
         exit(-1);
     }
     //create device
-    publish(client, "s/us", "100,C MQTT,c8y_MQTTDevice");
-    //set hardware information
-    publish(client, "s/us", "110,S123456789,MQTT test model,Rev0.1");
+    publish(client, "pac/name", "DeLonghi PAC N90 Eco"); 
     //listen for operation
-    MQTTClient_subscribe(client, "s/ds", 0);
+    MQTTClient_subscribe(client, "pac/on", 0);
 
 
 
@@ -248,13 +246,12 @@ int main (void)
 
   unsigned long data = dl_assemble_msg(&msg);
   char *result = returnBits(sizeof(data), &data);
-  printf ("%s",result);
 
-      for (;;) {
+  for (;;) {
         //send temperature measurement
-        publish(client, "s/us", "211,25");
+        publish(client, "s/us", result); 
         sleep(3);
-    }
+  }
 
 
         int result1 = irSling(
