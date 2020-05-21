@@ -1,4 +1,5 @@
 # pac-n90-raspi
+IR remote control for DeLonghi PAC N90 Eco on Raspi.
 
 
 ## References
