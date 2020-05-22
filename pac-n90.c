@@ -12,7 +12,36 @@
 #define OUT_PIN     24
 #define UPDATE_INTERVAL   3 // Update MQTT every N seconds
 
+// Define topics
 #define MQTT_TOPIC_TOGGLE_POWER "pac/toggle/power"
+#define MQTT_TOPIC_TOGGLE_MODE "pac/toggle/mode"
+#define MQTT_TOPIC_TOGGLE_FAN "pac/toggle/fan"
+#define MQTT_TOPIC_TOGGLE_TEMPERATURE "pac/toggle/temperature"
+
+#define MQTT_TOPIC_POWER "pac/power"
+#define MQTT_TOPIC_TEMPERATURE "pac/temperature"
+#define MQTT_TOPIC_UNITF "pac/unitF"
+#define MQTT_TOPIC_TIMER "pac/timer"
+#define MQTT_TOPIC_TIMER_VALUE "pac/timer_value"
+#define MQTT_TOPIC_MODE "pac/mode"
+#define MQTT_TOPIC_FAN "pac/fan"
+
+
+// Define modes
+#define MODE_AIRCONDITIONING 8
+#define MODE_DEHUMIDIFY 2
+#define MODE_BLOW 1
+#define MODE_AIRCONDITIONING_NAME "Airconditioning"
+#define MODE_DEHUMIDIFY_NAME "Dehumidify"
+#define MODE_BLOW_NAME "Blow"
+
+#define FAN_LOW 4
+#define FAN_MID 2 
+#define FAN_HIGH 1
+#define FAN_LOW_NAME "Low"
+#define FAN_MID_NAME "Mid"
+#define FAN_HIGH_NAME "High"
+
 
 typedef struct {
   bool on;
@@ -73,13 +102,6 @@ unsigned char bit_reverse( unsigned char x );
 #define TEMPERATURE_F_MIN 61
 #define TEMPERATURE_F_MAX 89
 
-#define MODE_AIRCONDITIONING 8
-#define MODE_DEHUMIDIFY 2
-#define MODE_BLOW 1
-
-#define FAN_LOW 4
-#define FAN_MID 2 
-#define FAN_HIGH 1
 
 
 unsigned long dl_assemble_msg(dl_aircon_msg_t* msg){
@@ -223,7 +245,7 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
   unsigned long data;
   char *result;
  
-  if (strcmp(topicName,"pac/toggle/power")==0)
+  if (strcmp(topicName,MQTT_TOPIC_TOGGLE_POWER)==0)
   {
     if(strcmp(payload,"on")==0) 
     { msg.on=true; }
@@ -231,7 +253,7 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
     { msg.on=false; }
   }
 
-  if (strcmp(topicName,"pac/toggle/mode")==0)
+  if (strcmp(topicName,MQTT_TOPIC_TOGGLE_MODE)==0)
   {
     if (atoi(payload) == MODE_AIRCONDITIONING)
     { msg.mode=MODE_AIRCONDITIONING; }
@@ -247,7 +269,7 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
     { msg.mode=MODE_BLOW; }
   }
 
-  if (strcmp(topicName,"pac/toggle/fan")==0)
+  if (strcmp(topicName,MQTT_TOPIC_TOGGLE_FAN)==0)
   {
     if (atoi(payload) == FAN_LOW)
     { msg.fan=FAN_LOW; }
@@ -263,7 +285,7 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
     { msg.fan=FAN_LOW; }
   }
 
-  if (strcmp(topicName,"pac/toggle/temperature")==0)
+  if (strcmp(topicName,MQTT_TOPIC_TOGGLE_TEMPERATURE)==0)
   {
     msg.temperature = constrain(atoi(payload), TEMPERATURE_MIN, TEMPERATURE_MAX); 
   }
@@ -302,9 +324,9 @@ int main (void)
   //listen for operation
   printf(MQTT_TOPIC_TOGGLE_POWER);
   MQTTClient_subscribe(client, MQTT_TOPIC_TOGGLE_POWER, 0);
-  MQTTClient_subscribe(client, "pac/toggle/mode", 0);
-  MQTTClient_subscribe(client, "pac/toggle/fan", 0);
-  MQTTClient_subscribe(client, "pac/toggle/temperature", 0);
+  MQTTClient_subscribe(client, MQTT_TOPIC_TOGGLE_MODE, 0);
+  MQTTClient_subscribe(client, MQTT_TOPIC_TOGGLE_FAN, 0);
+  MQTTClient_subscribe(client, MQTT_TOPIC_TOGGLE_TEMPERATURE, 0);
 
   //Default settings
   msg.on = false;
@@ -315,37 +337,30 @@ int main (void)
   msg.mode=MODE_AIRCONDITIONING;
   msg.fan=FAN_MID;
 
-
-  char power[8];
   char temperature[8];
   char unitF[8];
-  char timer[8];
   char timer_value[8];
-  char mode[20];
-  char fan[10];
 
   for (;;) {
     //send temperature measurement
-    if (msg.on == true) { sprintf(power, "on"); } else { sprintf(power, "off"); }
+    if (msg.on == true) { publish(client, MQTT_TOPIC_POWER, "on"); } else { publish(client, MQTT_TOPIC_POWER, "off"); }
     sprintf(temperature, "%d", msg.temperature);
     if (msg.unitF == true) { sprintf(unitF, "°F"); } else { sprintf(unitF, "°C"); }
-    if (msg.timer == true) { sprintf(timer, "on"); } else { sprintf(timer, "off"); }
+    if (msg.timer == true) { publish(client, MQTT_TOPIC_TIMER, "on");  } else { publish(client, MQTT_TOPIC_TIMER, "off");  }
     sprintf(timer_value, "%d", msg.timer_value);
-    if (msg.mode == MODE_AIRCONDITIONING) {sprintf(mode, "Airconditioning"); }
-    else if (msg.mode == MODE_DEHUMIDIFY) {sprintf(mode, "Dehumidify"); }
-    else if (msg.mode == MODE_BLOW)       {sprintf(mode, "Blow"); }
+    if (msg.mode == MODE_AIRCONDITIONING) { publish(client, MQTT_TOPIC_MODE, MODE_AIRCONDITIONING_NAME); }
+    else if (msg.mode == MODE_DEHUMIDIFY) { publish(client, MQTT_TOPIC_MODE, MODE_DEHUMIDIFY_NAME); }
+    else if (msg.mode == MODE_BLOW)       { publish(client, MQTT_TOPIC_MODE, MODE_BLOW_NAME); }
 
-    if (msg.fan == FAN_LOW)       {sprintf(fan, "Low"); }
-    else if (msg.fan == FAN_MID)  {sprintf(fan, "Mid"); }
-    else if (msg.fan == FAN_HIGH) {sprintf(fan, "high"); }
+    if (msg.fan == FAN_LOW)       { publish(client, MQTT_TOPIC_FAN, FAN_LOW_NAME); }
+    else if (msg.fan == FAN_MID)  { publish(client, MQTT_TOPIC_FAN, FAN_MID_NAME);  }
+    else if (msg.fan == FAN_HIGH) { publish(client, MQTT_TOPIC_FAN, FAN_HIGH_NAME); }
 
-    publish(client, "pac/power", power); 
-    publish(client, "pac/temperature", temperature); 
-    publish(client, "pac/unitF", unitF); 
-    publish(client, "pac/timer", timer); 
-    publish(client, "pac/timer_value", timer_value); 
-    publish(client, "pac/mode", mode); 
-    publish(client, "pac/fan", fan); 
+    publish(client, MQTT_TOPIC_TEMPERATURE, temperature); 
+    publish(client, MQTT_TOPIC_UNITF, unitF); 
+    
+    publish(client, MQTT_TOPIC_TIMER_VALUE, timer_value); 
+     
 
     sleep(UPDATE_INTERVAL);
   }
