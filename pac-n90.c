@@ -12,6 +12,8 @@
 #define OUT_PIN     24
 #define UPDATE_INTERVAL   3 // Update MQTT every N seconds
 
+#define MQTT_TOPIC_TOGGLE_POWER "pac/toggle/power"
+
 typedef struct {
   bool on;
   bool timer;
@@ -298,7 +300,7 @@ int main (void)
   publish(client, "pac/name", "DeLonghi PAC N90 Eco"); 
 
   //listen for operation
-  MQTTClient_subscribe(client, "pac/toggle/power", 0);
+  MQTTClient_subscribe(client, MQTT_TOPIC_TOGGLE_POWER, 0);
   MQTTClient_subscribe(client, "pac/toggle/mode", 0);
   MQTTClient_subscribe(client, "pac/toggle/fan", 0);
   MQTTClient_subscribe(client, "pac/toggle/temperature", 0);
