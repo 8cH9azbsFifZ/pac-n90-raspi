@@ -12,19 +12,21 @@
 #define OUT_PIN     24
 #define UPDATE_INTERVAL   3 // Update MQTT every N seconds
 
-// Define topics
-#define MQTT_TOPIC_TOGGLE_POWER "pac/toggle/power"
-#define MQTT_TOPIC_TOGGLE_MODE "pac/toggle/mode"
-#define MQTT_TOPIC_TOGGLE_FAN "pac/toggle/fan"
-#define MQTT_TOPIC_TOGGLE_TEMPERATURE "pac/toggle/temperature"
+#define MQTT_TOPIC_ROOT "pac1/"
 
-#define MQTT_TOPIC_POWER "pac/power"
-#define MQTT_TOPIC_TEMPERATURE "pac/temperature"
-#define MQTT_TOPIC_UNITF "pac/unitF"
-#define MQTT_TOPIC_TIMER "pac/timer"
-#define MQTT_TOPIC_TIMER_VALUE "pac/timer_value"
-#define MQTT_TOPIC_MODE "pac/mode"
-#define MQTT_TOPIC_FAN "pac/fan"
+// Define topics
+#define MQTT_TOPIC_TOGGLE_POWER MQTT_TOPIC_ROOT "pac/toggle/power"
+#define MQTT_TOPIC_TOGGLE_MODE MQTT_TOPIC_ROOT "pac/toggle/mode"
+#define MQTT_TOPIC_TOGGLE_FAN MQTT_TOPIC_ROOT "pac/toggle/fan"
+#define MQTT_TOPIC_TOGGLE_TEMPERATURE MQTT_TOPIC_ROOT "pac/toggle/temperature"
+
+#define MQTT_TOPIC_POWER MQTT_TOPIC_ROOT "pac/power"
+#define MQTT_TOPIC_TEMPERATURE MQTT_TOPIC_ROOT "pac/temperature"
+#define MQTT_TOPIC_UNITF MQTT_TOPIC_ROOT "pac/unitF"
+#define MQTT_TOPIC_TIMER MQTT_TOPIC_ROOT "pac/timer"
+#define MQTT_TOPIC_TIMER_VALUE MQTT_TOPIC_ROOT "pac/timer_value"
+#define MQTT_TOPIC_MODE MQTT_TOPIC_ROOT "pac/mode"
+#define MQTT_TOPIC_FAN MQTT_TOPIC_ROOT "pac/fan"
 
 
 // Define modes
