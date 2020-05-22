@@ -9,6 +9,8 @@
 
 #define ADDRESS     "t20:1883"
 #define CLIENTID    "<<clientId>>" // FIXME
+#define OUT_PIN     24
+#define UPDATE_INTERVAL   3 // Update MQTT every N seconds
 
 typedef struct {
   bool on;
@@ -77,6 +79,7 @@ unsigned char bit_reverse( unsigned char x );
 #define FAN_MID 2 
 #define FAN_HIGH 1
 
+
 unsigned long dl_assemble_msg(dl_aircon_msg_t* msg){
   unsigned long buf = 0x12000000;
 
@@ -109,24 +112,6 @@ unsigned long dl_assemble_msg(dl_aircon_msg_t* msg){
   return buf;
 }
 
-/*
-bool dl_decode_msg(unsigned long code, dl_aircon_msg_t* msg){
-  
-  msg->on = ( (code) >> 8 ) & 0x01;
-  msg->timer = ( (code) >> 9 ) & 0x01;
-  msg->unitF = ( (code) >> 10 ) & 0x01;
-
-  msg->temperature = bit_reverse(code & 0xFF);
-  if (!msg->unitF) { //degC has a -16 offset
-      msg->temperature += 16;
-  }
-
-  msg->timer_value = bit_reverse((code >> 12) & 0xF) >> 4;
-  msg->mode = (code >> 16) & 0xF;
-  msg->fan = (code >> 20) & 0xF;
-}
-
-*/
 
 // Reverse the order of bits in a byte. 
 // I.e. MSB is swapped with LSB, etc. 
@@ -159,6 +144,7 @@ void printBits(size_t const size, void const * const ptr, char *result)
     puts("");
 }
 
+
 char* returnBits(size_t const size, void const * const ptr)
 {
     unsigned char *b = (unsigned char*) ptr;
@@ -183,8 +169,6 @@ char* returnBits(size_t const size, void const * const ptr)
 }
 
 
-
-
 void publish(MQTTClient client, char* topic, char* payload) {
     MQTTClient_message pubmsg = MQTTClient_message_initializer;
     pubmsg.payload = payload;
@@ -200,136 +184,124 @@ void publish(MQTTClient client, char* topic, char* payload) {
 
 int send_ir (char* msg)
 {
+  uint32_t outPin = OUT_PIN;            // The Broadcom pin number the signal will be sent on
+  int frequency = 38000;           // The frequency of the IR signal in Hz
+  double dutyCycle = 0.5;          // The duty cycle of the IR signal. 0.5 means for every cycle,
+                                    // the LED will turn on for half the cycle time, and off the other half
+  int leadingPulseDuration = 9000; //9102; // The duration of the beginning pulse in microseconds
+  int leadingGapDuration = 4500;//4450;   // The duration of the gap in microseconds after the leading pulse
+  int onePulse = 560;              // The duration of a pulse in microseconds when sending a logical 1
+  int zeroPulse = 560;             // The duration of a pulse in microseconds when sending a logical 0
+  int oneGap = 1687; //1600;               // The duration of the gap in microseconds when sending a logical 1
+  int zeroGap = 560;               // The duration of the gap in microseconds when sending a logical 0
+  int sendTrailingPulse = 1;       // 1 = Send a trailing pulse with duration equal to "onePulse"
+                                    // 0 = Don't send a trailing pulse
 
-        uint32_t outPin = 24;            // The Broadcom pin number the signal will be sent on
-        int frequency = 38000;           // The frequency of the IR signal in Hz
-        double dutyCycle = 0.5;          // The duty cycle of the IR signal. 0.5 means for every cycle,
-                                         // the LED will turn on for half the cycle time, and off the other half
-        int leadingPulseDuration = 9000; //9102; // The duration of the beginning pulse in microseconds
-        int leadingGapDuration = 4500;//4450;   // The duration of the gap in microseconds after the leading pulse
-        int onePulse = 560;              // The duration of a pulse in microseconds when sending a logical 1
-        int zeroPulse = 560;             // The duration of a pulse in microseconds when sending a logical 0
-        int oneGap = 1687; //1600;               // The duration of the gap in microseconds when sending a logical 1
-        int zeroGap = 560;               // The duration of the gap in microseconds when sending a logical 0
-        int sendTrailingPulse = 1;       // 1 = Send a trailing pulse with duration equal to "onePulse"
-                                         // 0 = Don't send a trailing pulse
+  int result = irSling(
+          outPin,
+          frequency,
+          dutyCycle,
+          leadingPulseDuration,
+          leadingGapDuration,
+          onePulse,
+          zeroPulse,
+          oneGap,
+          zeroGap,
+          sendTrailingPulse,
+          msg);
 
-        int result = irSling(
-                outPin,
-                frequency,
-                dutyCycle,
-                leadingPulseDuration,
-                leadingGapDuration,
-                onePulse,
-                zeroPulse,
-                oneGap,
-                zeroGap,
-                sendTrailingPulse,
-                msg);
-   return result;
+  return result;
 }
 
 
 int on_message(void *context, char *topicName, int topicLen, MQTTClient_message *message) {
-    char* payload = message->payload;
-    printf("Received operation %s\n", payload);
-  
-    unsigned long data;
+  char* payload = message->payload;
+  printf("Received operation %s\n", payload);
+
+  unsigned long data;
   char *result;
  
-    if (strcmp(topicName,"pac/toggle/power")==0)
-{
-if(strcmp(payload,"on")==0) 
-{
-msg.on=true;
-}
-if(strcmp(payload,"off")==0) 
-{
-msg.on=false;
-}
-}
+  if (strcmp(topicName,"pac/toggle/power")==0)
+  {
+    if(strcmp(payload,"on")==0) 
+    { msg.on=true; }
+    if(strcmp(payload,"off")==0) 
+    { msg.on=false; }
+  }
 
-    if (strcmp(topicName,"pac/toggle/mode")==0)
-{
-        if (atoi(payload) == MODE_AIRCONDITIONING)
-{
-msg.mode=MODE_AIRCONDITIONING;
-}
-if (strcmp(payload,"airconditioning")==0)
-{
-msg.mode=MODE_AIRCONDITIONING;
-}
-        if (atoi(payload) == MODE_DEHUMIDIFY)
-{msg.mode=MODE_DEHUMIDIFY;}
-if (strcmp(payload,"dehumidify")==0)
-{msg.mode=MODE_DEHUMIDIFY;}
+  if (strcmp(topicName,"pac/toggle/mode")==0)
+  {
+    if (atoi(payload) == MODE_AIRCONDITIONING)
+    { msg.mode=MODE_AIRCONDITIONING; }
+    if (strcmp(payload,"airconditioning")==0)
+    { msg.mode=MODE_AIRCONDITIONING; }
+    if (atoi(payload) == MODE_DEHUMIDIFY)
+    { msg.mode=MODE_DEHUMIDIFY; }
+    if (strcmp(payload,"dehumidify")==0)
+    { msg.mode=MODE_DEHUMIDIFY; }
+    if (atoi(payload) == MODE_BLOW)
+    { msg.mode=MODE_BLOW; }
+    if (strcmp(payload,"blow")==0)
+    { msg.mode=MODE_BLOW; }
+  }
 
-        if (atoi(payload) == MODE_BLOW)
-{msg.mode=MODE_BLOW;}
+  if (strcmp(topicName,"pac/toggle/fan")==0)
+  {
+    if (atoi(payload) == FAN_LOW)
+    { msg.fan=FAN_LOW; }
+    if (atoi(payload) == FAN_MID)
+    { msg.fan=FAN_MID; }
+    if (atoi(payload) == FAN_HIGH)
+    { msg.fan=FAN_HIGH; }
+    if (strcmp(payload,"high") == 0)
+    { msg.fan=FAN_HIGH; }
+    if (strcmp(payload,"mid") == 0)
+    { msg.fan=FAN_MID; }
+    if (strcmp(payload,"low") == 0)
+    { msg.fan=FAN_LOW; }
+  }
 
-if (strcmp(payload,"blow")==0)
-{msg.mode=MODE_BLOW;}
-
-}
-
-    if (strcmp(topicName,"pac/toggle/fan")==0)
-{
-if (atoi(payload) == FAN_LOW)
-{ msg.fan=FAN_LOW; }
-if (atoi(payload) == FAN_MID)
-{ msg.fan=FAN_MID; }
-if (atoi(payload) == FAN_HIGH)
-{ msg.fan=FAN_HIGH; }
-if (strcmp(payload,"high") == 0)
-{ msg.fan=FAN_HIGH; }
-if (strcmp(payload,"mid") == 0)
-{ msg.fan=FAN_MID; }
-if (strcmp(payload,"low") == 0)
-{ msg.fan=FAN_LOW; }
-}
-
-    if (strcmp(topicName,"pac/toggle/temperature")==0)
-{
+  if (strcmp(topicName,"pac/toggle/temperature")==0)
+  {
     msg.temperature = constrain(atoi(payload), TEMPERATURE_MIN, TEMPERATURE_MAX); 
-}
+  }
 
-data = dl_assemble_msg(&msg);
-result = returnBits(sizeof(data), &data);
+  data = dl_assemble_msg(&msg);
+  result = returnBits(sizeof(data), &data);
   send_ir(result);
  
 
-    MQTTClient_freeMessage(&message);
-    MQTTClient_free(topicName);
+  MQTTClient_freeMessage(&message);
+  MQTTClient_free(topicName);
 
-    return 1;
+  return 1;
 }
-
 
 
 int main (void)
 {
-    MQTTClient client;
-    MQTTClient_create(&client, ADDRESS, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
-    MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
-    conn_opts.username = "<<tenant_ID>>/<<username>>"; // FIXME
-    conn_opts.password = "<<password>>";
+  MQTTClient client;
+  MQTTClient_create(&client, ADDRESS, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+  MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
+  conn_opts.username = "<<tenant_ID>>/<<username>>"; // FIXME
+  conn_opts.password = "<<password>>";
 
-    MQTTClient_setCallbacks(client, NULL, NULL, on_message, NULL);
+  MQTTClient_setCallbacks(client, NULL, NULL, on_message, NULL);
 
-    int rc;
-    if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS) {
-        printf("Failed to connect, return code %d\n", rc);
-        exit(-1);
-    }
-    //create device
-    publish(client, "pac/name", "DeLonghi PAC N90 Eco"); 
-    //listen for operation
-    MQTTClient_subscribe(client, "pac/toggle/power", 0);
-    MQTTClient_subscribe(client, "pac/toggle/mode", 0);
-    MQTTClient_subscribe(client, "pac/toggle/fan", 0);
-    MQTTClient_subscribe(client, "pac/toggle/temperature", 0);
+  int rc;
+  if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS) {
+      printf("Failed to connect, return code %d\n", rc);
+      exit(-1);
+  }
 
- 
+  //create device
+  publish(client, "pac/name", "DeLonghi PAC N90 Eco"); 
+
+  //listen for operation
+  MQTTClient_subscribe(client, "pac/toggle/power", 0);
+  MQTTClient_subscribe(client, "pac/toggle/mode", 0);
+  MQTTClient_subscribe(client, "pac/toggle/fan", 0);
+  MQTTClient_subscribe(client, "pac/toggle/temperature", 0);
 
   //Default settings
   msg.on = false;
@@ -350,41 +322,34 @@ int main (void)
   char fan[10];
 
   for (;;) {
-        //send temperature measurement
-        if (msg.on == true) { sprintf(power, "on"); } else { sprintf(power, "off"); }
-        sprintf(temperature, "%d", msg.temperature);
-        if (msg.unitF == true) { sprintf(unitF, "°F"); } else { sprintf(unitF, "°C"); }
-        if (msg.timer == true) { sprintf(timer, "on"); } else { sprintf(timer, "off"); }
-        sprintf(timer_value, "%d", msg.timer_value);
-        if (msg.mode == MODE_AIRCONDITIONING) 
-{sprintf(mode, "Airconditioning"); }
-else if (msg.mode == MODE_DEHUMIDIFY)
-{sprintf(mode, "Dehumidify"); }
-else if (msg.mode == MODE_BLOW) 
-{sprintf(mode, "Blow"); }
+    //send temperature measurement
+    if (msg.on == true) { sprintf(power, "on"); } else { sprintf(power, "off"); }
+    sprintf(temperature, "%d", msg.temperature);
+    if (msg.unitF == true) { sprintf(unitF, "°F"); } else { sprintf(unitF, "°C"); }
+    if (msg.timer == true) { sprintf(timer, "on"); } else { sprintf(timer, "off"); }
+    sprintf(timer_value, "%d", msg.timer_value);
+    if (msg.mode == MODE_AIRCONDITIONING) {sprintf(mode, "Airconditioning"); }
+    else if (msg.mode == MODE_DEHUMIDIFY) {sprintf(mode, "Dehumidify"); }
+    else if (msg.mode == MODE_BLOW)       {sprintf(mode, "Blow"); }
 
-        if (msg.fan == FAN_LOW) 
-{sprintf(fan, "Low"); }
-else if (msg.fan == FAN_MID)
-{sprintf(fan, "Mid"); }
-else if (msg.fan == FAN_HIGH) 
-{sprintf(fan, "high"); }
+    if (msg.fan == FAN_LOW)       {sprintf(fan, "Low"); }
+    else if (msg.fan == FAN_MID)  {sprintf(fan, "Mid"); }
+    else if (msg.fan == FAN_HIGH) {sprintf(fan, "high"); }
 
-        publish(client, "pac/power", power); 
-        publish(client, "pac/temperature", temperature); 
-        publish(client, "pac/unitF", unitF); 
-        publish(client, "pac/timer", timer); 
-        publish(client, "pac/timer_value", timer_value); 
+    publish(client, "pac/power", power); 
+    publish(client, "pac/temperature", temperature); 
+    publish(client, "pac/unitF", unitF); 
+    publish(client, "pac/timer", timer); 
+    publish(client, "pac/timer_value", timer_value); 
+    publish(client, "pac/mode", mode); 
+    publish(client, "pac/fan", fan); 
 
-        publish(client, "pac/mode", mode); 
-        publish(client, "pac/fan", fan); 
-
-        sleep(3);
+    sleep(UPDATE_INTERVAL);
   }
 
 
-    MQTTClient_disconnect(client, 1000);
-    MQTTClient_destroy(&client);
-    return rc;
+  MQTTClient_disconnect(client, 1000);
+  MQTTClient_destroy(&client);
 
+  return rc;
 }
