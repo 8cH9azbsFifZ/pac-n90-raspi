@@ -1,5 +1,7 @@
 [Unit]
 Description=PAC N90 MQTT service.
+After=network.target auditd.service
+
 
 [Service]
 Type=simple
