@@ -313,8 +313,8 @@ int main (void)
   msg.unitF = false;
   msg.timer = false;
   msg.timer_value = 1;
-  msg.mode=MODE_AIRCONDITIONING;
-  msg.fan=FAN_MID;
+  msg.mode=MODE_BLOW;//MODE_AIRCONDITIONING;
+  msg.fan=FAN_LOW;
 
   char temperature[8];
   char timer_value[8];
