@@ -237,15 +237,15 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
   {
     if (atoi(payload) == MODE_AIRCONDITIONING)
     { msg.mode=MODE_AIRCONDITIONING; }
-    if (strcmp(payload,"airconditioning")==0)
+    if (strcmp(payload,MODE_AIRCONDITIONING_NAME)==0)
     { msg.mode=MODE_AIRCONDITIONING; }
     if (atoi(payload) == MODE_DEHUMIDIFY)
     { msg.mode=MODE_DEHUMIDIFY; }
-    if (strcmp(payload,"dehumidify")==0)
+    if (strcmp(payload,MODE_DEHUMIDIFY_NAME)==0)
     { msg.mode=MODE_DEHUMIDIFY; }
     if (atoi(payload) == MODE_BLOW)
     { msg.mode=MODE_BLOW; }
-    if (strcmp(payload,"blow")==0)
+    if (strcmp(payload,MODE_BLOW_NAME)==0)
     { msg.mode=MODE_BLOW; }
   }
 
@@ -257,11 +257,11 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
     { msg.fan=FAN_MID; }
     if (atoi(payload) == FAN_HIGH)
     { msg.fan=FAN_HIGH; }
-    if (strcmp(payload,"high") == 0)
+    if (strcmp(payload,FAN_HIGH_NAME) == 0)
     { msg.fan=FAN_HIGH; }
-    if (strcmp(payload,"mid") == 0)
+    if (strcmp(payload,FAN_MID_NAME) == 0)
     { msg.fan=FAN_MID; }
-    if (strcmp(payload,"low") == 0)
+    if (strcmp(payload,FAN_LOW_NAME) == 0)
     { msg.fan=FAN_LOW; }
   }
 
