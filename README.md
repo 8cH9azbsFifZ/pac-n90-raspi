@@ -8,6 +8,14 @@ Install: paho.mqtt.c
 # Configuration
 - Adjust hostname & co for mqtt
 - Adjust topics for mqtt
+- make build
+- make install
+
+# Starting
+
+sudo systemctl start  pac-n90
+sudo systemctl enable pac-n90
+
 
 # Reverse engineering
 cat off_synth |grep "^1"|awk 'NR>1{if($2<700){a=a"0"}if($2>700){a=a"1"}}END{print a}'
