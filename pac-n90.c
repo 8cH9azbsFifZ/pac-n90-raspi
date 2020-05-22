@@ -10,26 +10,25 @@
 #define ADDRESS     "t20:1883"
 #define CLIENTID    "<<clientId>>" // FIXME
 #define OUT_PIN     24
-#define UPDATE_INTERVAL   3 // Update MQTT every N seconds
-
-#define MQTT_TOPIC_ROOT "pac1/"
+#define MQTT_TOPIC_ROOT "pac1/"       // i.e. the name of the ac
 
 // Define topics
-#define MQTT_TOPIC_TOGGLE_POWER MQTT_TOPIC_ROOT "pac/toggle/power"
-#define MQTT_TOPIC_TOGGLE_MODE MQTT_TOPIC_ROOT "pac/toggle/mode"
-#define MQTT_TOPIC_TOGGLE_FAN MQTT_TOPIC_ROOT "pac/toggle/fan"
-#define MQTT_TOPIC_TOGGLE_TEMPERATURE MQTT_TOPIC_ROOT "pac/toggle/temperature"
+#define MQTT_TOPIC_TOGGLE_POWER         MQTT_TOPIC_ROOT "pac/toggle/power"
+#define MQTT_TOPIC_TOGGLE_MODE          MQTT_TOPIC_ROOT "pac/toggle/mode"
+#define MQTT_TOPIC_TOGGLE_FAN           MQTT_TOPIC_ROOT "pac/toggle/fan"
+#define MQTT_TOPIC_TOGGLE_TEMPERATURE   MQTT_TOPIC_ROOT "pac/toggle/temperature"
 
-#define MQTT_TOPIC_POWER MQTT_TOPIC_ROOT "pac/power"
-#define MQTT_TOPIC_TEMPERATURE MQTT_TOPIC_ROOT "pac/temperature"
-#define MQTT_TOPIC_UNITF MQTT_TOPIC_ROOT "pac/unitF"
-#define MQTT_TOPIC_TIMER MQTT_TOPIC_ROOT "pac/timer"
-#define MQTT_TOPIC_TIMER_VALUE MQTT_TOPIC_ROOT "pac/timer_value"
-#define MQTT_TOPIC_MODE MQTT_TOPIC_ROOT "pac/mode"
-#define MQTT_TOPIC_FAN MQTT_TOPIC_ROOT "pac/fan"
+#define MQTT_TOPIC_POWER                MQTT_TOPIC_ROOT "pac/power"
+#define MQTT_TOPIC_TEMPERATURE          MQTT_TOPIC_ROOT "pac/temperature"
+#define MQTT_TOPIC_UNITF                MQTT_TOPIC_ROOT "pac/unitF"
+#define MQTT_TOPIC_TIMER                MQTT_TOPIC_ROOT "pac/timer"
+#define MQTT_TOPIC_TIMER_VALUE          MQTT_TOPIC_ROOT "pac/timer_value"
+#define MQTT_TOPIC_MODE                 MQTT_TOPIC_ROOT "pac/mode"
+#define MQTT_TOPIC_FAN                  MQTT_TOPIC_ROOT "pac/fan"
 
 
 // Define modes
+#define UPDATE_INTERVAL   3       // Update MQTT every N seconds
 #define MODE_AIRCONDITIONING 8
 #define MODE_DEHUMIDIFY 2
 #define MODE_BLOW 1
