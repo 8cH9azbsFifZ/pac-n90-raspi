@@ -10,7 +10,7 @@
 #define ADDRESS     "t20:1883"
 #define CLIENTID    "<<clientId>>" // FIXME
 #define OUT_PIN     24
-#define MQTT_TOPIC_ROOT "pac1/"       // i.e. the name of the ac
+#define MQTT_TOPIC_ROOT "" //"pac1/"       // i.e. the name of the ac
 
 // Define topics
 #define MQTT_TOPIC_TOGGLE_POWER         MQTT_TOPIC_ROOT "pac/toggle/power"
