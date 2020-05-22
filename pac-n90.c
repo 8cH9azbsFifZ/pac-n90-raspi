@@ -322,7 +322,6 @@ int main (void)
   publish(client, "pac/name", "DeLonghi PAC N90 Eco"); 
 
   //listen for operation
-  printf(MQTT_TOPIC_TOGGLE_POWER);
   MQTTClient_subscribe(client, MQTT_TOPIC_TOGGLE_POWER, 0);
   MQTTClient_subscribe(client, MQTT_TOPIC_TOGGLE_MODE, 0);
   MQTTClient_subscribe(client, MQTT_TOPIC_TOGGLE_FAN, 0);
@@ -338,16 +337,13 @@ int main (void)
   msg.fan=FAN_MID;
 
   char temperature[8];
-  char unitF[8];
   char timer_value[8];
 
   for (;;) {
     //send temperature measurement
     if (msg.on == true) { publish(client, MQTT_TOPIC_POWER, "on"); } else { publish(client, MQTT_TOPIC_POWER, "off"); }
-    sprintf(temperature, "%d", msg.temperature);
-    if (msg.unitF == true) { sprintf(unitF, "°F"); } else { sprintf(unitF, "°C"); }
+    if (msg.unitF == true) { publish(client, MQTT_TOPIC_UNITF, "°F"); } else { publish(client, MQTT_TOPIC_UNITF, "°C"); }
     if (msg.timer == true) { publish(client, MQTT_TOPIC_TIMER, "on");  } else { publish(client, MQTT_TOPIC_TIMER, "off");  }
-    sprintf(timer_value, "%d", msg.timer_value);
     if (msg.mode == MODE_AIRCONDITIONING) { publish(client, MQTT_TOPIC_MODE, MODE_AIRCONDITIONING_NAME); }
     else if (msg.mode == MODE_DEHUMIDIFY) { publish(client, MQTT_TOPIC_MODE, MODE_DEHUMIDIFY_NAME); }
     else if (msg.mode == MODE_BLOW)       { publish(client, MQTT_TOPIC_MODE, MODE_BLOW_NAME); }
@@ -356,11 +352,11 @@ int main (void)
     else if (msg.fan == FAN_MID)  { publish(client, MQTT_TOPIC_FAN, FAN_MID_NAME);  }
     else if (msg.fan == FAN_HIGH) { publish(client, MQTT_TOPIC_FAN, FAN_HIGH_NAME); }
 
+    sprintf(temperature, "%d", msg.temperature);
     publish(client, MQTT_TOPIC_TEMPERATURE, temperature); 
-    publish(client, MQTT_TOPIC_UNITF, unitF); 
-    
+
+    sprintf(timer_value, "%d", msg.timer_value);
     publish(client, MQTT_TOPIC_TIMER_VALUE, timer_value); 
-     
 
     sleep(UPDATE_INTERVAL);
   }
