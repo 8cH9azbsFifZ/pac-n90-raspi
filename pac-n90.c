@@ -300,6 +300,7 @@ int main (void)
   publish(client, "pac/name", "DeLonghi PAC N90 Eco"); 
 
   //listen for operation
+  printf(MQTT_TOPIC_TOGGLE_POWER);
   MQTTClient_subscribe(client, MQTT_TOPIC_TOGGLE_POWER, 0);
   MQTTClient_subscribe(client, "pac/toggle/mode", 0);
   MQTTClient_subscribe(client, "pac/toggle/fan", 0);
