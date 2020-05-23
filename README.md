@@ -8,6 +8,9 @@ IR remote control for DeLonghi PAC AirConditioners on Raspi with MQTT support fo
 | PAC N90 Eco   | Working       |
 | PAC NK76      | Not tested    |
 
+![Raspi GPIO Pins][gpio]
+
+
 
 # Dependencies
 - Prepare a raspi W zero 
@@ -16,7 +19,6 @@ IR remote control for DeLonghi PAC AirConditioners on Raspi with MQTT support fo
 - PIN VCC - PIN 2 (5V)
 - PIN GND - 20 (GND)
 
-![Raspi GPIO Pins][gpio]
 
 - Download raspian buster lite and flash it (https://www.raspberrypi.org/downloads/raspbian/)
 - make prepare_raspi
