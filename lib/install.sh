@@ -23,4 +23,3 @@ cd
 git clone https://github.com/8cH9azbsFifZ/pac-n90-raspi.git
 cd pac-n90-raspi
 make build
-make install
