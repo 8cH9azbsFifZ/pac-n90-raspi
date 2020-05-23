@@ -66,4 +66,4 @@ mosquitto_pub -h t20 -t pac/toggle/temperature -m 30
 - https://github.com/bschwind/ir-slinger
 - https://github.com/QuadrifoglioVerde/DL_PAC_NK76
 
-[gpio]: https://raw.githubusercontent.com/8cH9azbsFifZ/pac-n90-raspi/master/doc/pi-gpio-768x576.png | width=100 "Raspi GPIO Pins"
+[gpio]: https://raw.githubusercontent.com/8cH9azbsFifZ/pac-n90-raspi/master/doc/pi-gpio-768x576.png=250 "Raspi GPIO Pins"
