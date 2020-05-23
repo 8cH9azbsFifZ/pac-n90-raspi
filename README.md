@@ -14,6 +14,7 @@ IR remote control for DeLonghi PAC AirConditioners on Raspi with MQTT support fo
 # Dependencies
 - Prepare a raspi W zero 
 - Prepare and wire an IR transmitter module ()
+
 | PIN GPIO          | PIN IR Transmitter  |
 | ----------------- |:-------------------:| 
 | 18 (GPIO24)       | PIN DAT             |
