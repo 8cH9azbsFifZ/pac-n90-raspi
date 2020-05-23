@@ -1,5 +1,5 @@
 build:
-	gcc src/pac-n90.c -lm -lpigpio -pthread -lrt -lpaho-mqtt3c -opac-n90
+	gcc  -DMQTT_TOPIC_ROOT="n90" -DMQTT_ADDRESS="t20:1883" src/pac-n90.c -lm -lpigpio -pthread -lrt -lpaho-mqtt3c -opac-n90
 
 install:
 	sudo install pac-n90 /usr/local/bin

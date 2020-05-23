@@ -7,10 +7,16 @@
 
 #include "ir-slinger/irslinger.h" 
 
-#define ADDRESS     "t20:1883"
-#define CLIENTID    "<<clientId>>" // FIXME
-#define OUT_PIN     24
-#define MQTT_TOPIC_ROOT "" //"pac1/"       // i.e. the name of the ac
+#if !defined MQTT_ADDRESS
+#define MQTT_ADDRESS              "t20:1883"      // Address of the mqtt broker
+#endif
+
+#if !defined MQTT_TOPIC_ROOT
+#define MQTT_TOPIC_ROOT           ""            // i.e. the name of the ac
+#endif
+
+#define CLIENTID                  "<<clientId>>" // FIXME
+#define OUT_PIN                   24
 
 // Define topics
 #define MQTT_TOPIC_TOGGLE_POWER         MQTT_TOPIC_ROOT "pac/toggle/power"
@@ -28,20 +34,20 @@
 
 
 // Define modes
-#define UPDATE_INTERVAL   3       // Update MQTT every N seconds
-#define MODE_AIRCONDITIONING 8
-#define MODE_DEHUMIDIFY 2
-#define MODE_BLOW 1
-#define MODE_AIRCONDITIONING_NAME "Airconditioning"
-#define MODE_DEHUMIDIFY_NAME "Dehumidify"
-#define MODE_BLOW_NAME "Blow"
+#define UPDATE_INTERVAL               3       // Update MQTT every N seconds
+#define MODE_AIRCONDITIONING          8
+#define MODE_DEHUMIDIFY               2
+#define MODE_BLOW                     1
+#define MODE_AIRCONDITIONING_NAME     "Airconditioning"
+#define MODE_DEHUMIDIFY_NAME          "Dehumidify"
+#define MODE_BLOW_NAME                "Blow"
 
-#define FAN_LOW 4
-#define FAN_MID 2 
-#define FAN_HIGH 1
-#define FAN_LOW_NAME "Low"
-#define FAN_MID_NAME "Mid"
-#define FAN_HIGH_NAME "High"
+#define FAN_LOW                       4
+#define FAN_MID                       2 
+#define FAN_HIGH                      1
+#define FAN_LOW_NAME                  "Low"
+#define FAN_MID_NAME                  "Mid"
+#define FAN_HIGH_NAME                 "High"
 
 
 typedef struct {
@@ -285,7 +291,7 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
 int main (void)
 {
   MQTTClient client;
-  MQTTClient_create(&client, ADDRESS, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+  MQTTClient_create(&client, MQTT_ADDRESS, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
   MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
   conn_opts.username = "<<tenant_ID>>/<<username>>"; // FIXME
   conn_opts.password = "<<password>>";
