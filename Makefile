@@ -4,6 +4,8 @@ build:
 install:
 	sudo install pac-n90 /usr/local/bin
 	sudo install src/pac-n90.service /etc/systemd/system/
+	sudo systemctl start  pac-n90
+	sudo systemctl enable pac-n90
 
 prepare_raspi:
 	touch /Volumes/boot/ssh
