@@ -7,6 +7,7 @@ install:
 	sudo systemctl start  pac-n90
 	sudo systemctl enable pac-n90
 
+
 prepare_raspi:
 	touch /Volumes/boot/ssh
 	cp lib/wpa_supplicant.conf /Volumes/boot/
