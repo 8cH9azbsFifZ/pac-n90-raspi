@@ -9,11 +9,9 @@ IR remote control for DeLonghi PAC AirConditioners on Raspi with MQTT support fo
 | PAC NK76      | Not tested    |
 
 
-
-
 # Dependencies
-- Prepare a raspi W zero 
-- Prepare and wire an IR transmitter module ()
+- Prepare a Raspi W Zero 
+- Prepare and wire an IR transmitter module (i.e. [IR Transceiver](https://www.amazon.de/HALJIA-Digital-Infrarot-IR-Empf%C3%A4nger-Sensor-Modul-Transmitter/dp/B07BFNGF53))
 
 | PIN GPIO          | PIN IR Transmitter  |
 | ----------------- |:-------------------:| 
@@ -24,13 +22,15 @@ IR remote control for DeLonghi PAC AirConditioners on Raspi with MQTT support fo
 ![Raspi GPIO Pins][gpio]
 
 
-- Download raspian buster lite and flash it (https://www.raspberrypi.org/downloads/raspbian/)
+- Download [raspian](https://www.raspberrypi.org/downloads/raspbian/) buster lite and flash it (i.e. [Belena Etcher](https://www.balena.io/etcher/)).
 - make prepare_raspi
 - Boot it, and adjust hostname (and fixed IP on your router?) password raspberry (default)
+```
 ssh -lpi <your_ip>
 sudo su
 echo klima-raspi > /etc/hostname
 reboot
+```
 - Run install script
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/8cH9azbsFifZ/pac-n90-raspi/master/lib/install.sh)"
 or 
@@ -58,7 +58,7 @@ sudo systemctl start  pac-n90
 
 # Testing the installation
 mosquitto_pub -h t20 -t pac/toggle/power -m off
- mosquitto_sub -h t20 -t pac/power
+mosquitto_sub -h t20 -t pac/power
 mosquitto_pub -h t20 -t pac/toggle/temperature -m 30
 
 
