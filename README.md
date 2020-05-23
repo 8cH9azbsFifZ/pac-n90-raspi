@@ -7,8 +7,14 @@ IR remote control for DeLonghi PAC N90 Eco on Raspi.
 - PIN DAT - 18 (GPIO24)
 - PIN VCC - PIN 2 (5V)
 - PIN GND - 20 (GND)
+(doc/pi-gpio-768x576.png)
 - Download raspian buster lite and flash it (https://www.raspberrypi.org/downloads/raspbian/)
 - make prepare_raspi
+- Boot it, and adjust hostname (and fixed IP on your router?) password raspberry (default)
+ssh -lpi <your_ip>
+sudo su
+echo klima-raspi > /etc/hostname
+reboot
 
 sudo apt-get install libpigpio
 Install: paho.mqtt.c
