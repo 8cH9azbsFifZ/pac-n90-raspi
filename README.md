@@ -74,6 +74,7 @@ mosquitto_pub -h t20 -t pac/toggle/temperature -m 30
 - [Bit masks for N90](https://github.com/zeroflow/ESPAircon)
 - [IR Slinger library](https://github.com/bschwind/ir-slinger)
 - [Bit masks for NK76](https://github.com/QuadrifoglioVerde/DL_PAC_NK76)
+- [Reverse Engineering of an air conditioning control](https://www.instructables.com/id/Reverse-engineering-of-an-Air-Conditioning-control/)
 
 [gpio]: https://raw.githubusercontent.com/8cH9azbsFifZ/pac-n90-raspi/master/doc/pi-gpio-768x576.png "Raspi GPIO Pins"
 [n90]: https://raw.githubusercontent.com/8cH9azbsFifZ/pac-n90-raspi/master/doc/n90.jpg "DeLonghi N90 ECO with MQTT remote control"
