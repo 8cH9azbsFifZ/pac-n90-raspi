@@ -209,13 +209,13 @@ int send_ir (char* msg)
   int frequency = 38000;           // The frequency of the IR signal in Hz
   double dutyCycle = 0.5;          // The duty cycle of the IR signal. 0.5 means for every cycle,
                                     // the LED will turn on for half the cycle time, and off the other half
-  int leadingPulseDuration = 9000; //9102; // The duration of the beginning pulse in microseconds
-  int leadingGapDuration = 4500;//4450;   // The duration of the gap in microseconds after the leading pulse
+  int leadingPulseDuration = 0; //9102; // The duration of the beginning pulse in microseconds
+  int leadingGapDuration = 0;//4450;   // The duration of the gap in microseconds after the leading pulse
   int onePulse = 560;              // The duration of a pulse in microseconds when sending a logical 1
   int zeroPulse = 560;             // The duration of a pulse in microseconds when sending a logical 0
   int oneGap = 1687; //1600;               // The duration of the gap in microseconds when sending a logical 1
   int zeroGap = 560;               // The duration of the gap in microseconds when sending a logical 0
-  int sendTrailingPulse = 1;       // 1 = Send a trailing pulse with duration equal to "onePulse"
+  int sendTrailingPulse = 0;       // 1 = Send a trailing pulse with duration equal to "onePulse"
                                     // 0 = Don't send a trailing pulse
 
   int result = irSling(
@@ -233,6 +233,150 @@ int send_ir (char* msg)
 
   return result;
 }
+
+
+int send_power(void)
+{
+	uint32_t outPin = OUT_PIN;            // The Broadcom pin number the signal will be sent on
+	int frequency = 38000;          // The frequency of the IR signal in Hz
+	double dutyCycle = 0.5;         // The duty cycle of the IR signal. 0.5 means for every cycle,
+	                                // the LED will turn on for half the cycle time, and off the other half
+
+	int codes[] = {
+1258 , 
+383 , 
+1293 , 
+390 , 
+454 , 
+1226 , 
+1292 , 
+390 , 
+1293 , 
+396 , 
+460 , 
+1234 , 
+459 , 
+1238 , 
+456 , 
+1237 , 
+457 , 
+1236 , 
+461 , 
+1234 , 
+456 , 
+1238 , 
+1293 , 
+7173 , 
+1293 , 
+387 , 
+1288 , 
+391 , 
+457 , 
+1228 , 
+1294 , 
+389 , 
+1286 , 
+397 , 
+459 , 
+1236 , 
+459 , 
+1234 , 
+458 , 
+1238 , 
+456 , 
+1237 , 
+459 , 
+1235 , 
+460 , 
+1234 , 
+1293 , 
+7213 , 
+1294 , 
+384 , 
+1293 , 
+383 , 
+461 , 
+1227 , 
+1292 , 
+396 , 
+1283 , 
+400 , 
+458 , 
+1238 , 
+456 , 
+1235 , 
+458 , 
+1238 , 
+459 , 
+1236 , 
+458 , 
+1234 , 
+463 , 
+1229 , 
+1293 , 
+7189 , 
+1292 , 
+387 , 
+1288 , 
+392 , 
+457 , 
+1227 , 
+1292 , 
+388 , 
+1289 , 
+399 , 
+457 , 
+1236 , 
+457 , 
+1240 , 
+455 , 
+1243 , 
+453 , 
+1240 , 
+454 , 
+1242 , 
+451 , 
+1235 , 
+1295 , 
+7188 , 
+1291 , 
+389 , 
+1288 , 
+389 , 
+459 , 
+1227 , 
+1290 , 
+392 , 
+1286 , 
+399 , 
+458 , 
+1235 , 
+458 , 
+1243 , 
+452 , 
+1241 , 
+453 , 
+1242 , 
+451 , 
+1243 , 
+458 , 
+1230 , 
+1298 
+};
+
+	int result = irSlingRaw(
+		outPin,
+		frequency,
+		dutyCycle,
+		codes,
+		sizeof(codes) / sizeof(int));
+	
+	return result;
+}
+
+
+
+
 
 
 int on_message(void *context, char *topicName, int topicLen, MQTTClient_message *message) {
@@ -335,6 +479,8 @@ int main (void)
 
   char temperature[8];
   char timer_value[8];
+send_power();
+return 0;
 
   send_ir(SIGNAL_POWER); 
   send_ir(SIGNAL_POWER); 
