@@ -7,6 +7,12 @@ install:
 	sudo systemctl start  pac-n90
 	sudo systemctl enable pac-n90
 
+uninstall:
+	sudo systemctl stop pac-n90
+	sudo systemctl disable pac-n90
+	sudo rm /usr/local/bin/pac-n90
+	sudo rm /etc/systemd/system/pac-n90.service
+
 
 prepare_raspi:
 	touch /Volumes/boot/ssh
