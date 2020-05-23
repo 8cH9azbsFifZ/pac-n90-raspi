@@ -59,7 +59,7 @@ sudo systemctl start  pac-n90
 ```
 
 # Reverse engineering a new remote
-- use the `gcc bits.c` and `identify.py` in lib
+- use the `gcc bits.c`, ``showbinaries.py` and `showpulses.py` in lib
 - extract the bit patterns using stuff like: `cat off_synth |grep "^1"|awk 'NR>1{if($2<700){a=a"0"}if($2>700){a=a"1"}}END{print a}'`
 
 # Testing the installation
