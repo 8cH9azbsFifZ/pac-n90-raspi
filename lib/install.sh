@@ -18,4 +18,8 @@ make
 sudo make install
 
 
-
+# Install PAC remote control stuff
+cd
+git clone git@github.com:8cH9azbsFifZ/pac-n90-raspi.git
+cd pac-n90-raspi
+make build
