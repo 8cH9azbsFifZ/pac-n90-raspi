@@ -1,5 +1,6 @@
 # pac-n90-raspi
 IR remote control for DeLonghi PAC N90 Eco on Raspi.
+- Also works with N81.
 
 # Dependencies
 - Prepare a raspia W zero 
@@ -25,11 +26,7 @@ or
 - Adjust topics for mqtt
 - make build
 - make install
-
-# Starting
-
 sudo systemctl start  pac-n90
-sudo systemctl enable pac-n90
 
 
 # Reverse engineering a new remote
