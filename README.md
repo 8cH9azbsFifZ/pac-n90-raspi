@@ -2,8 +2,17 @@
 IR remote control for DeLonghi PAC N90 Eco on Raspi.
 
 # Dependencies
+- Prepare a raspia W zero 
+- Prepare and wire an IR transmitter module ()
+- PIN DAT - 18 (GPIO24)
+- PIN VCC - PIN 2 (5V)
+- PIN GND - 20 (GND)
+- Download raspian buster lite and flash it (https://www.raspberrypi.org/downloads/raspbian/)
+- make prepare_raspi
+
 sudo apt-get install libpigpio
 Install: paho.mqtt.c
+
 
 # Configuration
 - Adjust hostname & co for mqtt
