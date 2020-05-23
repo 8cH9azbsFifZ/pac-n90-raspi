@@ -26,6 +26,7 @@ IR remote control for DeLonghi PAC AirConditioners on Raspi with MQTT support fo
 - Boot it, and adjust hostname (and fixed IP on your router?) password raspberry (default)
 ```
 ssh -lpi <your_ip>
+
 sudo su
 echo klima-raspi > /etc/hostname
 reboot
@@ -34,6 +35,7 @@ reboot
 - Enable IR Mode for PINS by uncommenting the following lines:
 ```
 vim /boot/config.txt 
+
 dtoverlay=gpio-ir,gpio_pin=17
 dtoverlay=gpio-ir-tx,gpio_pin=18
 ```
@@ -56,8 +58,8 @@ sudo systemctl start  pac-n90
 ```
 
 # Reverse engineering a new remote
-- use the bits.c			identify.py in lib
-- extract the bit patterns using stuff liek: cat off_synth |grep "^1"|awk 'NR>1{if($2<700){a=a"0"}if($2>700){a=a"1"}}END{print a}'
+- use the `gcc bits.c` and `identify.py` in lib
+- extract the bit patterns using stuff like: `cat off_synth |grep "^1"|awk 'NR>1{if($2<700){a=a"0"}if($2>700){a=a"1"}}END{print a}'`
 
 # Testing the installation
 ```
@@ -67,9 +69,9 @@ mosquitto_pub -h t20 -t pac/toggle/temperature -m 30
 ```
 
 ## References
-- https://blog.bschwind.com/2016/05/29/sending-infrared-commands-from-a-raspberry-pi-without-lirc/
-- https://github.com/zeroflow/ESPAircon
-- https://github.com/bschwind/ir-slinger
-- https://github.com/QuadrifoglioVerde/DL_PAC_NK76
+- [Excellent description how to build this repo](https://blog.bschwind.com/2016/05/29/sending-infrared-commands-from-a-raspberry-pi-without-lirc/)
+- [Bit masks for N90](https://github.com/zeroflow/ESPAircon)
+- [IR Slinger library](https://github.com/bschwind/ir-slinger)
+- [Bit masks for NK76](https://github.com/QuadrifoglioVerde/DL_PAC_NK76)
 
 [gpio]: https://raw.githubusercontent.com/8cH9azbsFifZ/pac-n90-raspi/master/doc/pi-gpio-768x576.png "Raspi GPIO Pins"
