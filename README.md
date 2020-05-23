@@ -1,14 +1,22 @@
 # pac-n90-raspi
-IR remote control for DeLonghi PAC N90 Eco on Raspi.
-- Also works with N81.
+IR remote control for DeLonghi PAC AirConditioners on Raspi with MQTT support for integration in homeautomation systems (i.e. OpenHAB).
+
+
+| Device Name   | Status        |
+| ------------- |:-------------:| 
+| PAC N81       | Working       |
+| PAC N90 Eco   | Working       |
+| PAC NK76      | Not tested    |
+
 
 # Dependencies
-- Prepare a raspia W zero 
+- Prepare a raspi W zero 
 - Prepare and wire an IR transmitter module ()
 - PIN DAT - 18 (GPIO24)
 - PIN VCC - PIN 2 (5V)
 - PIN GND - 20 (GND)
-(doc/pi-gpio-768x576.png)
+![Raspi GPIO Pins][gpio]
+
 - Download raspian buster lite and flash it (https://www.raspberrypi.org/downloads/raspbian/)
 - make prepare_raspi
 - Boot it, and adjust hostname (and fixed IP on your router?) password raspberry (default)
@@ -53,3 +61,4 @@ mosquitto_pub -h t20 -t pac/toggle/temperature -m 30
 - https://blog.bschwind.com/2016/05/29/sending-infrared-commands-from-a-raspberry-pi-without-lirc/
 - https://github.com/zeroflow/ESPAircon
 - https://github.com/bschwind/ir-slinger
+[gpio]: https://raw.githubusercontent.com/8cH9azbsFifZ/pac-n90-raspi/master/doc/pi-gpio-768x576.png "Raspi GPIO Pins"
