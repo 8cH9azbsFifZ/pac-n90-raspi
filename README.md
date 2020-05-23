@@ -8,7 +8,7 @@ IR remote control for DeLonghi PAC AirConditioners on Raspi with MQTT support fo
 | PAC N90 Eco   | Working       |
 | PAC NK76      | Not tested    |
 
-![Raspi GPIO Pins][gpio]
+![Raspi GPIO Pins][gpio=250x250]
 
 
 
