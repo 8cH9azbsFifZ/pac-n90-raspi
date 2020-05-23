@@ -1,2 +1,3 @@
 #!/bin/bash
-echo ok
+sudo apt-get install libpigpio
+

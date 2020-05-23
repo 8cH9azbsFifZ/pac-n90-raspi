@@ -15,6 +15,9 @@ ssh -lpi <your_ip>
 sudo su
 echo klima-raspi > /etc/hostname
 reboot
+- Run install script
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/8cH9azbsFifZ/pac-n90-raspi/master/install.sh)"
+
 
 sudo apt-get install libpigpio
 Install: paho.mqtt.c
