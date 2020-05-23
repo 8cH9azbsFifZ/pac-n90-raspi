@@ -12,11 +12,20 @@
 #endif
 
 #if !defined MQTT_TOPIC_ROOT
-#define MQTT_TOPIC_ROOT           ""            // i.e. the name of the ac
+#define MQTT_TOPIC_ROOT           "n90/"            // i.e. the name of the ac
 #endif
 
-#define CLIENTID                  "<<clientId>>" // FIXME
+#if !defined PAC_NAME
+#define PAC_NAME                  "DeLonghi PAC N90 Eco"            // i.e. the name of the ac
+#endif
+
+// IR Pin on Raspi
 #define OUT_PIN                   24
+
+// MQTT Connection Configuration
+#define CLIENTID                  "<<clientId>>" // FIXME
+#define CLIENT_USERNAME           "<<tenant_ID>>/<<username>>"
+#define CLIENT_PASSWORD           "<<password>>"
 
 // Define topics
 #define MQTT_TOPIC_TOGGLE_POWER         MQTT_TOPIC_ROOT "pac/toggle/power"
@@ -104,12 +113,10 @@ unsigned char bit_reverse( unsigned char x );
 #define MAX(X, Y)  ((X) > (Y) ? (X) : (Y))
 #define constrain(X,Y,Z) (MIN(MAX(X,Y),Z))
 
-#define TEMPERATURE_MIN 16
-#define TEMPERATURE_MAX 32
-#define TEMPERATURE_F_MIN 61
-#define TEMPERATURE_F_MAX 89
-
-
+#define TEMPERATURE_MIN       16
+#define TEMPERATURE_MAX       32
+#define TEMPERATURE_F_MIN     61
+#define TEMPERATURE_F_MAX     89
 
 unsigned long dl_assemble_msg(dl_aircon_msg_t* msg){
   unsigned long buf = 0x12000000;
@@ -293,8 +300,8 @@ int main (void)
   MQTTClient client;
   MQTTClient_create(&client, MQTT_ADDRESS, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
   MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
-  conn_opts.username = "<<tenant_ID>>/<<username>>"; // FIXME
-  conn_opts.password = "<<password>>";
+  conn_opts.username = CLIENT_USERNAME; 
+  conn_opts.password = CLIENT_PASSWORD;
 
   MQTTClient_setCallbacks(client, NULL, NULL, on_message, NULL);
 
@@ -305,7 +312,7 @@ int main (void)
   }
 
   //create device
-  publish(client, "pac/name", "DeLonghi PAC N90 Eco"); 
+  publish(client, "pac/name", PAC_NAME); 
 
   //listen for operation
   MQTTClient_subscribe(client, MQTT_TOPIC_TOGGLE_POWER, 0);
