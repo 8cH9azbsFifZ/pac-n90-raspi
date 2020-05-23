@@ -21,6 +21,14 @@ reboot
 or 
 ./lib/install.sh
 
+
+Enable IR Mode for PINS:
+/boot/config.txt 
+#dtoverlay=gpio-ir,gpio_pin=17
+#dtoverlay=gpio-ir-tx,gpio_pin=18
+
+
+
 # Configuration
 - Adjust hostname & co for mqtt
 - Adjust topics for mqtt
