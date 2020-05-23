@@ -316,13 +316,13 @@ int main (void)
   }
 
   //create device
-  publish(client, "pac/name", PAC_NAME); 
+  //publish(client, "pac/name", PAC_NAME); 
 
   //listen for operation
-  MQTTClient_subscribe(client, MQTT_TOPIC_TOGGLE_POWER, 0);
-  MQTTClient_subscribe(client, MQTT_TOPIC_TOGGLE_MODE, 0);
-  MQTTClient_subscribe(client, MQTT_TOPIC_TOGGLE_FAN, 0);
-  MQTTClient_subscribe(client, MQTT_TOPIC_TOGGLE_TEMPERATURE, 0);
+  //MQTTClient_subscribe(client, MQTT_TOPIC_TOGGLE_POWER, 0);
+  //MQTTClient_subscribe(client, MQTT_TOPIC_TOGGLE_MODE, 0);
+  //MQTTClient_subscribe(client, MQTT_TOPIC_TOGGLE_FAN, 0);
+  //MQTTClient_subscribe(client, MQTT_TOPIC_TOGGLE_TEMPERATURE, 0);
 
   //Default settings
   msg.on = false;
@@ -336,6 +336,8 @@ int main (void)
   char temperature[8];
   char timer_value[8];
 
+  send_ir(SIGNAL_POWER); 
+  send_ir(SIGNAL_POWER); 
   send_ir(SIGNAL_POWER); 
 
 //#define SIGNAL_POWER 	"00100111111100100111111100100111111100100111111100100111111100100111111"
