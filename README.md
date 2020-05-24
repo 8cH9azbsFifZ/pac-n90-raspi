@@ -61,9 +61,8 @@ vim src/pac-n90.c
 
 - Build and install the software
 ```
-gcc  src/pac-n90.c -lm -lpigpio -pthread -lrt -lpaho-mqtt3c -opac-n90
-sudo install pac-n90 /usr/local/bin
-sudo install src/pac-n90.service /etc/systemd/system/
+make pac-n90
+make honeywell
 sudo systemctl start  pac-n90
 sudo systemctl enable pac-n90
 ```
