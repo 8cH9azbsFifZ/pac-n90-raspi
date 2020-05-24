@@ -245,11 +245,11 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
   {
     int state=0;
     if (strcmp(payload,FAN_HIGH_NAME) == 0)
-    { msg.fan=FAN_HIGH; }
+    { state=FAN_HIGH; }
     if (strcmp(payload,FAN_MID_NAME) == 0)
-    { msg.fan=FAN_MID; }
+    { state=FAN_MID; }
     if (strcmp(payload,FAN_LOW_NAME) == 0)
-    { msg.fan=FAN_LOW; }
+    { state=FAN_LOW; }
     if (state != 0)
     {
       while (state != msg.fan)
