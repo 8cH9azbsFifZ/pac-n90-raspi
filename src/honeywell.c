@@ -267,7 +267,29 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
     send_turn();
   }
 
-  // FIXME: timer
+  if (strcmp(topicName,MQTT_TOPIC_TOGGLE_TIMER)==0)
+  {
+    int state=-1;
+    if (strcmp(payload,TIMER_30_NAME) == 0)
+    { state=TIMER_30; }
+    if (strcmp(payload,TIMER_60_NAME) == 0)
+    { state=TIMER_60; }
+    if (strcmp(payload,TIMER_120_NAME) == 0)
+    { state=TIMER_120; }
+    if (strcmp(payload,TIMER_240_NAME) == 0)
+    { state=TIMER_240; }    
+    if (strcmp(payload,TIMER_NONE_NAME) == 0)
+    { state=TIMER_NONE; }
+    if (state != -1)
+    {
+      while (state != msg.timer)
+      {
+        msg.timer++;
+        if (msg.timer>5) {msg.timer=1;}
+        send_timer();
+      }
+    }
+  }
 
   MQTTClient_freeMessage(&message);
   MQTTClient_free(topicName);
