@@ -31,6 +31,7 @@ touch /Volumes/boot/ssh
 cp lib/wpa_supplicant.conf /Volumes/boot/
 vim /Volumes/boot/wpa_supplicant.conf
 ```
+
 - Boot it, and adjust hostname (and fixed IP on your router?) password raspberry (default)
 ```
 ssh -lpi <your_ip>
