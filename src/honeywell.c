@@ -41,28 +41,34 @@
 #define MQTT_TOPIC_TIMER                MQTT_TOPIC_ROOT "fan/timer"
 
 
-// Define modes
 #define UPDATE_INTERVAL               3       // Update MQTT every N seconds
-#define WAVE_WOOD                     8
-#define WAVE_MOON                     2
+
+// Define modes
+#define WAVE_WOOD                     2
+#define WAVE_MOON                     3
 #define WAVE_NONE                     1
 #define WAVE_WOOD_NAME                "Wood"
 #define WAVE_MOON_NAME                "Moon"
-#define WAVE_NONE_NAME                "None"
+#define WAVE_NONE_NAME                "-"
 
-#define FAN_LOW                       4
+#define FAN_LOW                       1
 #define FAN_MID                       2 
-#define FAN_HIGH                      1
+#define FAN_HIGH                      3
 #define FAN_LOW_NAME                  "Low"
 #define FAN_MID_NAME                  "Mid"
 #define FAN_HIGH_NAME                 "High"
 
-#define TIMER_30                      30
-#define TIMER_60                      60
-#define TIMER_120                     120
-#define TIMER_240                     240
-#define TIMER_NONE                    0
+#define TIMER_30                      2
+#define TIMER_60                      3
+#define TIMER_120                     4
+#define TIMER_240                     5
+#define TIMER_NONE                    1
 
+#define TIMER_30_NAME                      "30"
+#define TIMER_60_NAME                      "60"
+#define TIMER_120_NAME                     "120"
+#define TIMER_240_NAME                     "240"
+#define TIMER_NONE_NAME                    "-"
 
 typedef struct {
   bool on;
@@ -215,14 +221,20 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
 
   if (strcmp(topicName,MQTT_TOPIC_TOGGLE_WAVE)==0)
   {
+    int wave;
     if (strcmp(payload,WAVE_MOON_NAME)==0)
-    { msg.wave=WAVE_MOON; }
+    { wave=WAVE_MOON; }
     if (strcmp(payload,WAVE_WOOD_NAME)==0)
-    { msg.wave=WAVE_WOOD; }
+    { wave=WAVE_WOOD; }
     if (strcmp(payload,WAVE_NONE_NAME)==0)
-    { msg.wave=WAVE_NONE; }
-    // FIXME: rotate scenes
-    send_wave();
+    { wave=WAVE_NONE; }
+    int i;
+    while (msg.wave != wave)
+    {
+      msg.wave++;
+      if (msg.wave>3) {msg.wave=1;}
+      send_wave();
+    }
   }
 
   if (strcmp(topicName,MQTT_TOPIC_TOGGLE_FAN)==0)
