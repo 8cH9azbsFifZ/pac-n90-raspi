@@ -15,8 +15,8 @@
 #define MQTT_TOPIC_ROOT           "honeywell/"            // i.e. the name of the ac
 #endif
 
-#if !defined PAC_NAME
-#define PAC_NAME                  "Honeywell Fan"            // i.e. the name of the ac
+#if !defined FAN_NAME  
+#define FAN_NAME                  "Honeywell Fan"            // i.e. the name of the ac
 #endif
 
 // IR Pin on Raspi
@@ -28,28 +28,27 @@
 #define CLIENT_PASSWORD           "<<password>>"
 
 // Define topics
-#define MQTT_TOPIC_TOGGLE_POWER         MQTT_TOPIC_ROOT "pac/toggle/power"
-#define MQTT_TOPIC_TOGGLE_MODE          MQTT_TOPIC_ROOT "pac/toggle/mode"
-#define MQTT_TOPIC_TOGGLE_FAN           MQTT_TOPIC_ROOT "pac/toggle/fan"
-#define MQTT_TOPIC_TOGGLE_TEMPERATURE   MQTT_TOPIC_ROOT "pac/toggle/temperature"
+#define MQTT_TOPIC_TOGGLE_POWER         MQTT_TOPIC_ROOT "fan/toggle/power"
+#define MQTT_TOPIC_TOGGLE_WAVE          MQTT_TOPIC_ROOT "fan/toggle/wave"
+#define MQTT_TOPIC_TOGGLE_FAN           MQTT_TOPIC_ROOT "fan/toggle/fan"
+#define MQTT_TOPIC_TOGGLE_TURN          MQTT_TOPIC_ROOT "fan/toggle/turn"
+#define MQTT_TOPIC_TOGGLE_TIMER         MQTT_TOPIC_ROOT "fan/toggle/timer"
 
-#define MQTT_TOPIC_POWER                MQTT_TOPIC_ROOT "pac/power"
-#define MQTT_TOPIC_TEMPERATURE          MQTT_TOPIC_ROOT "pac/temperature"
-#define MQTT_TOPIC_UNITF                MQTT_TOPIC_ROOT "pac/unitF"
-#define MQTT_TOPIC_TIMER                MQTT_TOPIC_ROOT "pac/timer"
-#define MQTT_TOPIC_TIMER_VALUE          MQTT_TOPIC_ROOT "pac/timer_value"
-#define MQTT_TOPIC_MODE                 MQTT_TOPIC_ROOT "pac/mode"
-#define MQTT_TOPIC_FAN                  MQTT_TOPIC_ROOT "pac/fan"
+#define MQTT_TOPIC_POWER                MQTT_TOPIC_ROOT "fan/power"
+#define MQTT_TOPIC_TURN                 MQTT_TOPIC_ROOT "fan/turn"
+#define MQTT_TOPIC_WAVE                 MQTT_TOPIC_ROOT "fan/wave"
+#define MQTT_TOPIC_FAN                  MQTT_TOPIC_ROOT "fan/fan"
+#define MQTT_TOPIC_TIMER                MQTT_TOPIC_ROOT "fan/timer"
 
 
 // Define modes
 #define UPDATE_INTERVAL               3       // Update MQTT every N seconds
-#define MODE_AIRCONDITIONING          8
-#define MODE_DEHUMIDIFY               2
-#define MODE_BLOW                     1
-#define MODE_AIRCONDITIONING_NAME     "Airconditioning"
-#define MODE_DEHUMIDIFY_NAME          "Dehumidify"
-#define MODE_BLOW_NAME                "Blow"
+#define WAVE_WOOD                     8
+#define WAVE_MOON                     2
+#define WAVE_NONE                     1
+#define MODE_AIRCONDITIONING_NAME     "Wood"
+#define MODE_DEHUMIDIFY_NAME          "Moon"
+#define MODE_BLOW_NAME                "None"
 
 #define FAN_LOW                       4
 #define FAN_MID                       2 
@@ -58,136 +57,24 @@
 #define FAN_MID_NAME                  "Mid"
 #define FAN_HIGH_NAME                 "High"
 
-#define SIGNAL_POWER 	"00100111111100100111111100100111111100100111111100100111111"
-#define SIGNAL_FAN    "00100111110100100111110100100111110100100111110100100111110100100111110"
-#define SIGNAL_TURN	  "00100110111100100110111100100110111100100110111100100110111100100110111"
-#define SIGNAL_WAVE	  "00100111101100100111101100100111101100100111101100100111101100100111101"
+#define TIMER_30                      30
+#define TIMER_60                      60
+#define TIMER_120                     120
+#define TIMER_240                     240
+#define TIMER_NONE                    0
+
 
 typedef struct {
   bool on;
   bool timer;
-  bool unitF;
-  int temperature;
-  int timer_value;
-  int mode;
+  bool turn;
+  int timer;
+  int wave;
   int fan;
 } dl_aircon_msg_t;
 
 
 dl_aircon_msg_t msg;
-
-unsigned long dl_assemble_msg(dl_aircon_msg_t* msg);
-bool dl_decode_msg(dl_aircon_msg_t* msg);
-void dl_print_msg(dl_aircon_msg_t *msg);
-unsigned char bit_reverse( unsigned char x );
-
-/*
- * DeLonghi PAC N81 IR Commands
- * 
- * 32 Bit Value
- * NEC Encoding
- * 
- * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
- * |   0x01    |   0x02    |  |Lo|Md|Hi|Ac|  |Dh|Bl|
- * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
- * | Timer     |  |CF|T |ON|    Temperature        |
- * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
- * 
- * 0x01 and 0x02 is a fixed prefix
- * Lo / Md / Hi are bits for the fan setting
- * Cl / Dh / Bl are mode switches
- *    Ac  Airconditioning
- *    Dh  Dehumidify
- *    Bl  Blow (Fan Mode)
- * Timer is the set value for timer control.     
- *    Set to 1 even if not active via the bit
- * CF   Celsius / Fahrenheit Setting. Low C, High F
- * T    Timer Low Off, High On
- * On   On/Off Switch
- * 
- * Temperature    8-Bit Temperature Value
- * 
- * 0-16 means 16-32°C
- * 61-89 means 61-89°F
- * 
- * Both the temperature and timer have their bit-order reversed.
- */
-
-#define MIN(X, Y)  ((X) < (Y) ? (X) : (Y))
-#define MAX(X, Y)  ((X) > (Y) ? (X) : (Y))
-#define constrain(X,Y,Z) (MIN(MAX(X,Y),Z))
-
-#define TEMPERATURE_MIN       16
-#define TEMPERATURE_MAX       32
-#define TEMPERATURE_F_MIN     61
-#define TEMPERATURE_F_MAX     89
-
-unsigned long dl_assemble_msg(dl_aircon_msg_t* msg){
-  unsigned long buf = 0x12000000;
-
-  if (!msg->unitF){
-    msg->temperature = constrain(msg->temperature, TEMPERATURE_MIN, TEMPERATURE_MAX); 
-    buf |= bit_reverse(msg->temperature-TEMPERATURE_MIN);
-  }else{
-    msg->temperature = constrain(msg->temperature, TEMPERATURE_F_MIN, TEMPERATURE_F_MAX); 
-    buf |= bit_reverse(msg->temperature);
-  }
-
-  buf |= bit_reverse(msg->timer_value) << 8;
-
-  if (msg->on) buf |= 0x1 << 8;
-  if (msg->timer) buf |= 0x1 << 9;
-  if (msg->unitF) buf |= 0x1 << 10;
-
-  if (msg->mode == 8 || msg->mode == 2 || msg->mode == 1){
-    buf |= msg->mode << 16;
-  }else{
-    buf |= 0x8 << 16;
-  }
-
-  if (msg->fan == 4 || msg->fan == 2 || msg->fan == 1){
-    buf |= msg->fan << 20;
-  }else{
-    buf |= 0x2 << 20;
-  }
-
-  return buf;
-}
-
-
-// Reverse the order of bits in a byte. 
-// I.e. MSB is swapped with LSB, etc. 
-unsigned char bit_reverse( unsigned char x ) 
-{ 
-   x = ((x >> 1) & 0x55) | ((x << 1) & 0xaa); 
-   x = ((x >> 2) & 0x33) | ((x << 2) & 0xcc); 
-   x = ((x >> 4) & 0x0f) | ((x << 4) & 0xf0); 
-   return x;    
-}
-
-
-char* returnBits(size_t const size, void const * const ptr)
-{
-    unsigned char *b = (unsigned char*) ptr;
-    unsigned char byte;
-    int i, j;
-    char *binary = malloc(size*8+1); // each char is one byte (8 bits) and + 1 at the end for null terminator
-    binary[0] = '\0';
-
-    for (i=size-1;i>=0;i--)
-    {
-        for (j=7;j>=0;j--)
-        {
-            byte = (b[i] >> j) & 1;
-            if (byte) { 
-		strcat (binary,"1");
-	    }else{
-		strcat(binary,"0");
-	    }
-        }
-    }
-    return binary;
-}
 
 
 void publish(MQTTClient client, char* topic, char* payload) {
@@ -200,38 +87,6 @@ void publish(MQTTClient client, char* topic, char* payload) {
     MQTTClient_publishMessage(client, topic, &pubmsg, &token);
     MQTTClient_waitForCompletion(client, token, 1000L);
     printf("Message '%s' with delivery token %d delivered\n", payload, token);
-}
-
-
-int send_ir (char* msg)
-{
-  uint32_t outPin = OUT_PIN;            // The Broadcom pin number the signal will be sent on
-  int frequency = 38000;           // The frequency of the IR signal in Hz
-  double dutyCycle = 0.5;          // The duty cycle of the IR signal. 0.5 means for every cycle,
-                                    // the LED will turn on for half the cycle time, and off the other half
-  int leadingPulseDuration = 0; //9102; // The duration of the beginning pulse in microseconds
-  int leadingGapDuration = 0;//4450;   // The duration of the gap in microseconds after the leading pulse
-  int onePulse = 560;              // The duration of a pulse in microseconds when sending a logical 1
-  int zeroPulse = 560;             // The duration of a pulse in microseconds when sending a logical 0
-  int oneGap = 1687; //1600;               // The duration of the gap in microseconds when sending a logical 1
-  int zeroGap = 560;               // The duration of the gap in microseconds when sending a logical 0
-  int sendTrailingPulse = 0;       // 1 = Send a trailing pulse with duration equal to "onePulse"
-                                    // 0 = Don't send a trailing pulse
-
-  int result = irSling(
-          outPin,
-          frequency,
-          dutyCycle,
-          leadingPulseDuration,
-          leadingGapDuration,
-          onePulse,
-          zeroPulse,
-          oneGap,
-          zeroGap,
-          sendTrailingPulse,
-          msg);
-
-  return result;
 }
 
 
