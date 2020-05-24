@@ -229,14 +229,17 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
     { wave=WAVE_WOOD; }
     if (strcmp(payload,WAVE_NONE_NAME)==0)
     { wave=WAVE_NONE; }
-    if (wave == 0) { return 0; }
-    int i;
-    while (msg.wave != wave)
+    if (wave != 0) 
     {
-      msg.wave++;
-      if (msg.wave>3) {msg.wave=1;}
-      send_wave();
+      int i;
+      while (msg.wave != wave)
+      {
+        msg.wave++;
+        if (msg.wave>3) {msg.wave=1;}
+        send_wave();
+      }
     }
+
   }
 
   if (strcmp(topicName,MQTT_TOPIC_TOGGLE_FAN)==0)
