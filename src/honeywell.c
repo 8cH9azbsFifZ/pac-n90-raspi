@@ -49,7 +49,7 @@
 #define WAVE_NONE                     1
 #define WAVE_WOOD_NAME                "Wood"
 #define WAVE_MOON_NAME                "Moon"
-#define WAVE_NONE_NAME                "-"
+#define WAVE_NONE_NAME                "None"
 
 #define FAN_LOW                       1
 #define FAN_MID                       2 
@@ -68,7 +68,7 @@
 #define TIMER_60_NAME                      "60"
 #define TIMER_120_NAME                     "120"
 #define TIMER_240_NAME                     "240"
-#define TIMER_NONE_NAME                    "-"
+#define TIMER_NONE_NAME                    "0"
 
 typedef struct {
   bool on;
@@ -222,13 +222,14 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
 
   if (strcmp(topicName,MQTT_TOPIC_TOGGLE_WAVE)==0)
   {
-    int wave;
+    int wave=0;
     if (strcmp(payload,WAVE_MOON_NAME)==0)
     { wave=WAVE_MOON; }
     if (strcmp(payload,WAVE_WOOD_NAME)==0)
     { wave=WAVE_WOOD; }
     if (strcmp(payload,WAVE_NONE_NAME)==0)
     { wave=WAVE_NONE; }
+    if (wave == 0) { return 0; }
     int i;
     while (msg.wave != wave)
     {
