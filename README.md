@@ -1,17 +1,17 @@
 # pac-n90-raspi
 IR remote control for DeLonghi PAC AirConditioners on Raspi with MQTT support for integration in homeautomation systems (i.e. OpenHAB).
 
-| Device Name   | Status        |
-| ------------- |:-------------:| 
-| PAC N81       | Working       |
-| PAC N90 Eco   | Working       |
-| PAC NK76      | Not tested    |   
-| Honeywell HO-5500RE | Working |
+| Device Name   | Status        | Source      |
+| ------------- |:-------------:| ------------|
+| PAC N81       | Working       | pac-n90.c   |
+| PAC N90 Eco   | Working       | pac-n90.c   |
+| PAC NK76      | Not tested    | pac-n90.c   |  
+| Honeywell HO-5500RE | Working | honeywell.c |
 
 
 !["DeLonghi N90 ECO with MQTT remote control"][n90]
 
-# Dependencies
+# Preparation of the Rasperry Pi
 - Prepare a Raspi W Zero 
 - Prepare and wire an IR transmitter module (i.e. [IR Transceiver](https://www.amazon.de/HALJIA-Digital-Infrarot-IR-Empf%C3%A4nger-Sensor-Modul-Transmitter/dp/B07BFNGF53))
 
@@ -25,16 +25,19 @@ IR remote control for DeLonghi PAC AirConditioners on Raspi with MQTT support fo
 
 
 - Download [raspian](https://www.raspberrypi.org/downloads/raspbian/) buster lite and flash it (i.e. [Belena Etcher](https://www.balena.io/etcher/)).
-- make prepare_raspi
+- Prepare with ssh and WiFi
+````
+touch /Volumes/boot/ssh
+cp lib/wpa_supplicant.conf /Volumes/boot/
+vim /Volumes/boot/wpa_supplicant.conf
+```
 - Boot it, and adjust hostname (and fixed IP on your router?) password raspberry (default)
 ```
 ssh -lpi <your_ip>
 
 sudo su
 echo klima-raspi > /etc/hostname
-reboot
 ```
-- Run install script for preparation  `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/8cH9azbsFifZ/pac-n90-raspi/master/lib/install.sh)"` or clone this repo and run `./lib/install.sh`.
 - Enable IR Mode for PINS by uncommenting the following lines:
 ```
 vim /boot/config.txt 
@@ -42,9 +45,12 @@ vim /boot/config.txt
 dtoverlay=gpio-ir,gpio_pin=17
 dtoverlay=gpio-ir-tx,gpio_pin=18
 ```
+- Reboot the raspi
+- Run install script for preparation  `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/8cH9azbsFifZ/pac-n90-raspi/master/lib/install.sh)"` or clone this repo and run `./lib/install.sh`.
 
-# Configuration
-- Configure MQTT variables
+
+# Configuration of the software
+- Configure MQTT variables in the corresponding source file:
 ```
 vim src/pac-n90.c
 
@@ -55,14 +61,16 @@ vim src/pac-n90.c
 
 - Build and install the software
 ```
-make build
-make install
+gcc  src/pac-n90.c -lm -lpigpio -pthread -lrt -lpaho-mqtt3c -opac-n90
+sudo install pac-n90 /usr/local/bin
+sudo install src/pac-n90.service /etc/systemd/system/
 sudo systemctl start  pac-n90
+sudo systemctl enable pac-n90
 ```
 
 # Reverse engineering a new remote
 - use the `gcc bits.c`, ``showbinaries.py` and `showpulses.py` in lib
-- extract the bit patterns using stuff like: `cat off_synth |grep "^1"|awk 'NR>1{if($2<700){a=a"0"}if($2>700){a=a"1"}}END{print a}'`
+- extract the bit patterns using stuff like: `showcodes.py` in lib
 
 # Testing the installation
 ```

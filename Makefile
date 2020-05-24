@@ -15,11 +15,5 @@ uninstall:
 	sudo rm /usr/local/bin/pac-n90
 	sudo rm /etc/systemd/system/pac-n90.service
 
-
-prepare_raspi:
-	touch /Volumes/boot/ssh
-	cp lib/wpa_supplicant.conf /Volumes/boot/
-	vim /Volumes/boot/wpa_supplicant.conf
-
 run:
 	sudo ./pac-n90
