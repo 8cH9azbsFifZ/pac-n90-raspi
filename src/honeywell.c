@@ -211,49 +211,40 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
     { msg.on=true; }
     if(strcmp(payload,"off")==0) 
     { msg.on=false; }
+    send_power();
   }
 
-  if (strcmp(topicName,MQTT_TOPIC_TOGGLE_MODE)==0)
+  if (strcmp(topicName,MQTT_TOPIC_TOGGLE_WAVE)==0)
   {
-    if (atoi(payload) == MODE_AIRCONDITIONING)
-    { msg.mode=MODE_AIRCONDITIONING; }
-    if (strcmp(payload,MODE_AIRCONDITIONING_NAME)==0)
-    { msg.mode=MODE_AIRCONDITIONING; }
-    if (atoi(payload) == MODE_DEHUMIDIFY)
-    { msg.mode=MODE_DEHUMIDIFY; }
-    if (strcmp(payload,MODE_DEHUMIDIFY_NAME)==0)
-    { msg.mode=MODE_DEHUMIDIFY; }
-    if (atoi(payload) == MODE_BLOW)
-    { msg.mode=MODE_BLOW; }
-    if (strcmp(payload,MODE_BLOW_NAME)==0)
-    { msg.mode=MODE_BLOW; }
+    if (strcmp(payload,WAVE_MOON_NAME)==0)
+    { msg.mode=WAVE_MOON; }
+    if (strcmp(payload,WAVE_WOOD_NAME)==0)
+    { msg.mode=WAVE_WOOD; }
+    if (strcmp(payload,WAVE_NONE_NAME)==0)
+    { msg.mode=WAVE_NONE; }
+    // FIXME: rotate scenes
+    send_wave();
   }
 
   if (strcmp(topicName,MQTT_TOPIC_TOGGLE_FAN)==0)
   {
-    if (atoi(payload) == FAN_LOW)
-    { msg.fan=FAN_LOW; }
-    if (atoi(payload) == FAN_MID)
-    { msg.fan=FAN_MID; }
-    if (atoi(payload) == FAN_HIGH)
-    { msg.fan=FAN_HIGH; }
     if (strcmp(payload,FAN_HIGH_NAME) == 0)
     { msg.fan=FAN_HIGH; }
     if (strcmp(payload,FAN_MID_NAME) == 0)
     { msg.fan=FAN_MID; }
     if (strcmp(payload,FAN_LOW_NAME) == 0)
     { msg.fan=FAN_LOW; }
+    send_fan();
+    // FIXME: rotate states
   }
 
-  if (strcmp(topicName,MQTT_TOPIC_TOGGLE_TEMPERATURE)==0)
+  if (strcmp(topicName,MQTT_TOPIC_TOGGLE_TURN)==0)
   {
-    msg.temperature = constrain(atoi(payload), TEMPERATURE_MIN, TEMPERATURE_MAX); 
+    msg.turn = !msg.turn;
+    send_turn(;) 
   }
 
-  data = dl_assemble_msg(&msg);
-  result = returnBits(sizeof(data), &data);
-  send_ir(result);
- 
+  // FIXME: timer
 
   MQTTClient_freeMessage(&message);
   MQTTClient_free(topicName);
