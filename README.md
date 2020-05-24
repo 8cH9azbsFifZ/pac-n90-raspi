@@ -69,7 +69,7 @@ sudo systemctl enable pac-n90
 ```
 
 # Reverse engineering a new remote
-- use the `gcc bits.c`, ``showbinaries.py` and `showpulses.py` in lib
+- use the `gcc bits.c`, `showbinaries.py` and `showpulses.py` in lib
 - extract the bit patterns using stuff like: `showcodes.py` in lib
 
 # Testing the installation
