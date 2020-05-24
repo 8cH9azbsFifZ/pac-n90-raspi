@@ -212,7 +212,7 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
  
   if (strcmp(topicName,MQTT_TOPIC_TOGGLE_POWER)==0)
   {
-    bool state;
+    bool state = true;
     if(strcmp(payload,"on")==0) 
     { state=true; }
     if(strcmp(payload,"off")==0) 
@@ -239,19 +239,26 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
         send_wave();
       }
     }
-
   }
 
   if (strcmp(topicName,MQTT_TOPIC_TOGGLE_FAN)==0)
   {
+    int state=0;
     if (strcmp(payload,FAN_HIGH_NAME) == 0)
     { msg.fan=FAN_HIGH; }
     if (strcmp(payload,FAN_MID_NAME) == 0)
     { msg.fan=FAN_MID; }
     if (strcmp(payload,FAN_LOW_NAME) == 0)
     { msg.fan=FAN_LOW; }
-    send_fan();
-    // FIXME: rotate states
+    if (state != 0)
+    {
+      while (state != msg.fan)
+      {
+        msg.fan++;
+        if (msg.fan>3) {msg.fan=1;}
+        send_fan();
+      }
+    }
   }
 
   if (strcmp(topicName,MQTT_TOPIC_TOGGLE_TURN)==0)
