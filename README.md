@@ -26,7 +26,7 @@ IR remote control for DeLonghi PAC AirConditioners on Raspi with MQTT support fo
 
 - Download [raspian](https://www.raspberrypi.org/downloads/raspbian/) buster lite and flash it (i.e. [Belena Etcher](https://www.balena.io/etcher/)).
 - Prepare with ssh and WiFi
-````
+```
 touch /Volumes/boot/ssh
 cp lib/wpa_supplicant.conf /Volumes/boot/
 vim /Volumes/boot/wpa_supplicant.conf
