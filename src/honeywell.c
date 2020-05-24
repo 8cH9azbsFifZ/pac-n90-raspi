@@ -217,11 +217,11 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
   if (strcmp(topicName,MQTT_TOPIC_TOGGLE_WAVE)==0)
   {
     if (strcmp(payload,WAVE_MOON_NAME)==0)
-    { msg.mode=WAVE_MOON; }
+    { msg.wave=WAVE_MOON; }
     if (strcmp(payload,WAVE_WOOD_NAME)==0)
-    { msg.mode=WAVE_WOOD; }
+    { msg.wave=WAVE_WOOD; }
     if (strcmp(payload,WAVE_NONE_NAME)==0)
-    { msg.mode=WAVE_NONE; }
+    { msg.wave=WAVE_NONE; }
     // FIXME: rotate scenes
     send_wave();
   }
@@ -241,7 +241,7 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
   if (strcmp(topicName,MQTT_TOPIC_TOGGLE_TURN)==0)
   {
     msg.turn = !msg.turn;
-    send_turn(;) 
+    send_turn();
   }
 
   // FIXME: timer
