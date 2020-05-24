@@ -66,7 +66,6 @@
 
 typedef struct {
   bool on;
-  bool timer;
   bool turn;
   int timer;
   int wave;
