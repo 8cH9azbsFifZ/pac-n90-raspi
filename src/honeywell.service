@@ -1,0 +1,11 @@
+[Unit]
+Description=Honeywell MQTT service.
+After=network.target auditd.service
+
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/honeywell
+
+[Install]
+WantedBy=multi-user.target

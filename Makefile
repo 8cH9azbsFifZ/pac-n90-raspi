@@ -1,6 +1,8 @@
-build:
+pac-n90:
 	gcc  src/pac-n90.c -lm -lpigpio -pthread -lrt -lpaho-mqtt3c -opac-n90
 
+honeywell:
+	gcc  src/pac-n90.c -lm -lpigpio -pthread -lrt -lpaho-mqtt3c -ohoneywell
 
 install:
 	sudo install pac-n90 /usr/local/bin
