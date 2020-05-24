@@ -212,11 +212,12 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
  
   if (strcmp(topicName,MQTT_TOPIC_TOGGLE_POWER)==0)
   {
+    bool state;
     if(strcmp(payload,"on")==0) 
-    { msg.on=true; }
+    { state=true; }
     if(strcmp(payload,"off")==0) 
-    { msg.on=false; }
-    send_power();
+    { state=false; }
+    if (state != msg.on) { msg.on = state; send_power(); }
   }
 
   if (strcmp(topicName,MQTT_TOPIC_TOGGLE_WAVE)==0)
