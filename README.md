@@ -41,6 +41,7 @@ echo klima-raspi > /etc/hostname
 ```
 - Enable IR Mode for PINS by uncommenting the following lines:
 ```
+apt-get install -y vim
 vim /boot/config.txt 
 
 dtoverlay=gpio-ir,gpio_pin=17
@@ -64,6 +65,7 @@ vim src/pac-n90.c
 ```
 make pac-n90
 make honeywell
+make install
 sudo systemctl start  pac-n90
 sudo systemctl enable pac-n90
 ```
