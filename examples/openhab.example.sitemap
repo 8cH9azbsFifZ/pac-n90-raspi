@@ -1,0 +1,3 @@
+Switch    item=G3_Klima_Power
+Selection item=G3_Klima_Mode  mappings=["Dehumidify"="Dehumidify", "Airconditioning"="Airconditioning", "Blow"="Blow"]  visibility=[G3_Klima_Power==ON]
+Selection item=G3_Klima_Fan   mappings=["Low"="Low", "Mid"="Mid", "High"="High"]                                        visibility=[G3_Klima_Power==ON]

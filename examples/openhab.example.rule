@@ -1,0 +1,11 @@
+rule "Klima Fernbedienung ein"
+when Item G3_Klima_Power received command ON then
+    var boot_time_raspi = 60000 
+    if (G3_Klima_Switch.state == OFF)
+    {   
+        G3_Klima_Power.state = OFF
+        G3_Klima_Switch.sendCommand(ON)
+        Thread::sleep(boot_time_raspi);
+        G3_Klima_Power.sendCommand(ON)
+    }
+end
