@@ -81,6 +81,9 @@ mosquitto_sub -h t20 -t pac/power
 mosquitto_pub -h t20 -t pac/toggle/temperature -m 30
 ```
 
+# Example configurations
+- Relevant fragments for configuration of OpenHAB are given in `examples`.
+
 ## References
 - [Excellent description how to build this repo](https://blog.bschwind.com/2016/05/29/sending-infrared-commands-from-a-raspberry-pi-without-lirc/)
 - [Bit masks for N90](https://github.com/zeroflow/ESPAircon)
