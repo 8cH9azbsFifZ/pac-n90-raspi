@@ -1,0 +1,15 @@
+// Klimaanlage
+Switch                      Klima_Switch    "Klima Strom"    <switch>          (G3)              {channel=":::switch"}
+Switch                      Switch_Timer    "Klima Timer"                (G3_Details_Klima)      {expire="90s,command=OFF"}
+Number                      Switch_RSSI     "Klima RSSI"                 (G3_Details_RSSI)       {channel=":::rssi"}
+Switch                      Switch_LED      "Klima LED"    <switch>      (G3_Details_Klima)      {channel=":::led"}
+Number:Power                Switch_Power    "Klima PWR"                  (G3_Details_Klima)      {channel=":::power"}
+Number:Energy               Switch_Energy   "Klima Energy"               (G3_Details_Klima)      {channel=":::eneryUsage"}
+Number:ElectricCurrent      Switch_Current  "Klima Stromverbrauch"       (G3_Details_Klima)      {channel=":::current"}
+Number:ElectricPotential    Switch_Voltage  "Klima Spannung"             (G3_Details_Klima)      {channel=":::voltage"}
+
+// klima-raspi
+Number                      Temp            "Klima Temp"                 (G3_Details_Klima)      {channel="mqtt:topic:1::temp" }
+String                      Mode            "Klima Mode"                 (G3_Details_Klima)      {channel="mqtt:topic:1::mode" }
+String                      Fan             "Klima Fan"                  (G3_Details_Klima)      {channel="mqtt:topic:1::fan" }
+Switch                      Power           "Klima Power"                (G3_Details_Klima)      {channel="mqtt:topic:1::power" }
