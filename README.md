@@ -75,6 +75,7 @@ sudo systemctl enable pac-n90
 - extract the bit patterns using stuff like: `showcodes.py` in lib
 
 # Testing the installation
++ Install mosquitto, i.e. on osx: `brew install mosquitto`
 ```
 mosquitto_pub -h t20 -t pac/toggle/power -m off
 mosquitto_sub -h t20 -t pac/power
