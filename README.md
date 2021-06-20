@@ -21,8 +21,6 @@ IR remote control for DeLonghi PAC AirConditioners on Raspi with MQTT support fo
 | PIN 2 (5V)        | PIN VCC             |
 | 20 (GND)          | PIN GND             |
 
-![Raspi GPIO Pins][gpio]
-
 
 - Download [raspian](https://www.raspberrypi.org/downloads/raspbian/) buster lite and flash it (i.e. [Belena Etcher](https://www.balena.io/etcher/)).
 - Prepare with ssh and WiFi
@@ -59,6 +57,9 @@ vim src/pac-n90.c
 #define MQTT_ADDRESS              "t20:1883"     
 #define MQTT_TOPIC_ROOT           "n90/"          
 #define PAC_NAME                  "DeLonghi PAC N90 Eco"        
+...
+#define CLIENTID                  "<<clientId>>" // FIXME
+
 ```
 
 - Build and install the software
