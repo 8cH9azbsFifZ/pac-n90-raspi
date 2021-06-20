@@ -21,6 +21,7 @@ IR remote control for DeLonghi PAC AirConditioners on Raspi with MQTT support fo
 | PIN 2 (5V)        | PIN VCC             |
 | 20 (GND)          | PIN GND             |
 
+![Wiring][wiring]
 
 - Download [raspian](https://www.raspberrypi.org/downloads/raspbian/) buster lite and flash it (i.e. [Belena Etcher](https://www.balena.io/etcher/)).
 - Prepare with ssh and WiFi
