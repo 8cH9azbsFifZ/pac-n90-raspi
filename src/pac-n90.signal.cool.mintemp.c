@@ -318,5 +318,13 @@ int main (void)
   msg.mode=MODE_AIRCONDITIONING;//MODE_AIRCONDITIONING;
   msg.fan=FAN_LOW;
 
+
+  unsigned long data;
+  char *result;
+  data = dl_assemble_msg(&msg);
+  result = returnBits(sizeof(data), &data);
+  send_ir(result);
+
+
   return 0;
 }
