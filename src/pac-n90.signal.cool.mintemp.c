@@ -318,5 +318,5 @@ int main (void)
   msg.mode=MODE_AIRCONDITIONING;//MODE_AIRCONDITIONING;
   msg.fan=FAN_LOW;
 
-  return rc;
+  return 0;
 }
