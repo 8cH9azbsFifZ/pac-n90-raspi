@@ -311,7 +311,7 @@ int main (void)
 
   // Cool Min Temp
   msg.on = true;
-  msg.temperature = 24;
+  msg.temperature = 16;
   msg.unitF = false;
   msg.timer = false;
   msg.timer_value = 1;
